@@ -11,19 +11,40 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Facades\Auth;
 
 class SiswaResource extends Resource
 {
     protected static ?string $model = Siswa::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
+    protected static ?string $navigationGroup = 'Data Siswa & Guru';
+    protected static ?string $navigationLabel = 'Siswa';
+    protected static ?string $modelLabel = 'Siswa';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->label('Nama User')
+                    ->required(),
+
+                Forms\Components\TextInput::make('nis')
+                    ->required(),
+
+                Forms\Components\DatePicker::make('tanggal_lahir')
+                    ->required(),
+
+                Forms\Components\TextInput::make('alamat')
+                    ->required(),
+
+                Forms\Components\Select::make('kelas_id')
+                    ->relationship('kelas', 'nama')
+                    ->label('Kelas')
+                    ->required(),
             ]);
     }
 
@@ -31,7 +52,25 @@ class SiswaResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('user.name')
+                    ->label('Nama Siswa')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('user.email')
+                    ->label('Email'),
+
+                TextColumn::make('nis')
+                    ->label('NIS'),
+
+                TextColumn::make('kelas.nama')
+                    ->label('Kelas'),
+
+                TextColumn::make('user.roles.name')
+                    ->label('Role')
+                    ->formatStateUsing(function ($state) {
+                        return is_array($state) ? implode(', ', $state) : $state;
+                    }),
             ])
             ->filters([
                 //
@@ -44,6 +83,14 @@ class SiswaResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user.roles', function ($query) {
+                $query->where('name', 'murid');
+            });
     }
 
     public static function getRelations(): array
