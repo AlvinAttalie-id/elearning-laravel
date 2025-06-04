@@ -63,9 +63,6 @@ class SiswaResource extends Resource
                 TextColumn::make('nis')
                     ->label('NIS'),
 
-                TextColumn::make('kelas.nama')
-                    ->label('Kelas'),
-
                 TextColumn::make('user.roles.name')
                     ->label('Role')
                     ->formatStateUsing(function ($state) {
