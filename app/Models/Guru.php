@@ -12,8 +12,8 @@ class Guru extends Model
     protected $table = 'guru';
 
     protected $fillable = [
+        'user_id',
         'nip',
-        'nama',
         'no_hp',
     ];
 
@@ -30,5 +30,10 @@ class Guru extends Model
     public function jadwalPelajaran()
     {
         return $this->hasMany(JadwalPelajaran::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

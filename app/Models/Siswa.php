@@ -12,8 +12,8 @@ class Siswa extends Model
     protected $table = 'siswa';
 
     protected $fillable = [
+        'user_id',
         'nis',
-        'nama',
         'tanggal_lahir',
         'alamat',
         'kelas_id',
@@ -33,5 +33,10 @@ class Siswa extends Model
     public function kehadiran()
     {
         return $this->hasMany(Kehadiran::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

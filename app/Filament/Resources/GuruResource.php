@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class GuruResource extends Resource
 {
@@ -31,7 +34,19 @@ class GuruResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('user.name')
+                    ->label('Nama Guru')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('user.email')
+                    ->label('Email'),
+
+                TextColumn::make('user.roles.name')
+                    ->label('Role')
+                    ->formatStateUsing(function ($state) {
+                        return is_array($state) ? implode(', ', $state) : $state;
+                    }),
             ])
             ->filters([
                 //
@@ -46,12 +61,21 @@ class GuruResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereHas('user.roles', function ($query) {
+                $query->where('name', 'Guru');
+            });
+    }
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
+
 
     public static function getPages(): array
     {

@@ -24,18 +24,60 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Validasi umum
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        // Validasi & update untuk Guru
+        if ($user->role === 'guru') {
+            $request->validate([
+                'nip' => 'required|string|max:20',
+                'no_hp' => 'nullable|string|max:20',
+            ]);
+
+            $user->guru()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'nip' => $request->nip,
+                    'no_hp' => $request->no_hp,
+                ]
+            );
         }
 
-        $request->user()->save();
+        // Validasi & update untuk Siswa
+        if ($user->role === 'siswa') {
+            $request->validate([
+                'nis' => 'required|string|max:20',
+                'tanggal_lahir' => 'required|date',
+                'alamat' => 'nullable|string|max:255',
+                'kelas_id' => 'required|integer',
+            ]);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+            $user->siswa()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'nis' => $request->nis,
+                    'tanggal_lahir' => $request->tanggal_lahir,
+                    'alamat' => $request->alamat,
+                    'kelas_id' => $request->kelas_id,
+                ]
+            );
+        }
+
+        return Redirect::back()->with('status', 'profile-updated');
     }
+
 
     /**
      * Delete the user's account.
