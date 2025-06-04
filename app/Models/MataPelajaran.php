@@ -36,4 +36,9 @@ class MataPelajaran extends Model
     {
         return $this->hasMany(Tugas::class, 'mapel_id');
     }
+
+    public function kelas()
+    {
+        return $this->belongsToMany(Kelas::class, 'kelas_mata_pelajaran');
+    }
 }

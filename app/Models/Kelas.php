@@ -22,6 +22,11 @@ class Kelas extends Model
         return $this->belongsTo(Guru::class, 'wali_kelas_id');
     }
 
+    public function mataPelajaran()
+    {
+        return $this->belongsToMany(MataPelajaran::class, 'kelas_mata_pelajaran');
+    }
+
     public function siswa()
     {
         return $this->hasMany(Siswa::class);
