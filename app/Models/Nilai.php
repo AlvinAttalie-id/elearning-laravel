@@ -23,6 +23,11 @@ class Nilai extends Model
         return $this->belongsTo(Siswa::class);
     }
 
+    public function tugas()
+    {
+        return $this->belongsTo(Tugas::class);
+    }
+
     // Relasi ke Mata Pelajaran
     public function mataPelajaran()
     {
