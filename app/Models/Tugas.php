@@ -34,6 +34,11 @@ class Tugas extends Model
         return $this->belongsTo(Kelas::class);
     }
 
+    public function jawaban()
+    {
+        return $this->hasMany(JawabanTugas::class);
+    }
+
     public function nilai()
     {
         return $this->hasMany(Nilai::class);

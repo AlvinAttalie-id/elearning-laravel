@@ -84,7 +84,9 @@ class TugasResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            \App\Filament\Resources\TugasResource\RelationManagers\JawabanRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
