@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SiswaResource\Pages;
-use App\Filament\Resources\SiswaResource\RelationManagers;
 use App\Models\Siswa;
+use App\Models\Kelas;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class SiswaResource extends Resource
 {
@@ -42,8 +43,14 @@ class SiswaResource extends Resource
                     ->required(),
 
                 Forms\Components\Select::make('kelas_id')
-                    ->relationship('kelas', 'nama')
                     ->label('Kelas')
+                    ->options(function () {
+                        return Kelas::withCount('siswa')
+                            ->get()
+                            ->filter(fn($kelas) => $kelas->siswa_count < 10)
+                            ->pluck('nama', 'id');
+                    })
+                    ->searchable()
                     ->required(),
             ]);
     }
@@ -65,9 +72,7 @@ class SiswaResource extends Resource
 
                 TextColumn::make('user.roles.name')
                     ->label('Role')
-                    ->formatStateUsing(function ($state) {
-                        return is_array($state) ? implode(', ', $state) : $state;
-                    }),
+                    ->formatStateUsing(fn($state) => is_array($state) ? implode(', ', $state) : $state),
             ])
             ->filters([
                 //
@@ -104,5 +109,31 @@ class SiswaResource extends Resource
             'create' => Pages\CreateSiswa::route('/create'),
             'edit' => Pages\EditSiswa::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Validasi custom saat membuat siswa
+     */
+    public static function beforeCreate(array $data): void
+    {
+        $kelas = Kelas::withCount('siswa')->find($data['kelas_id']);
+        if ($kelas && $kelas->siswa_count >= 10) {
+            throw ValidationException::withMessages([
+                'kelas_id' => 'Kelas ini sudah penuh. Maksimal hanya 10 siswa.',
+            ]);
+        }
+    }
+
+    public static function beforeUpdate(array $data, Siswa $record): void
+    {
+        // Cek hanya jika user mencoba ganti kelas
+        if ($data['kelas_id'] != $record->kelas_id) {
+            $kelas = Kelas::withCount('siswa')->find($data['kelas_id']);
+            if ($kelas && $kelas->siswa_count >= 10) {
+                throw ValidationException::withMessages([
+                    'kelas_id' => 'Kelas ini sudah penuh. Maksimal hanya 10 siswa.',
+                ]);
+            }
+        }
     }
 }

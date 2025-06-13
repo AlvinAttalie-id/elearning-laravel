@@ -19,6 +19,8 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Fieldset;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Actions\Action;
+use App\Filament\Resources\KelasResource\Pages\SiswaKelas;
 
 class KelasResource extends Resource
 {
@@ -93,24 +95,36 @@ class KelasResource extends Resource
                     ->label('Mata Pelajaran')
                     ->badge()
                     ->limitList(3)
-                    ->bulleted()
                     ->separator(','),
+
+                TextColumn::make('siswa_count')
+                    ->label('Jumlah Siswa')
+                    ->badge()
+                    ->color(fn($state) => $state >= 10 ? 'danger' : 'success'),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y, H:i'),
             ])
             ->filters([
-                // Tambah filter jika dibutuhkan
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+
+                Action::make('lihatSiswa')
+                    ->label('Lihat Siswa')
+                    ->icon('heroicon-o-users')
+                    ->url(fn($record) => route('filament.admin.resources.kelas.siswa', ['kelas' => $record->id]))
+                    ->color('info'),
             ])
+
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
+
 
     public static function getRelations(): array
     {
@@ -118,6 +132,14 @@ class KelasResource extends Resource
             // Tambah RelationManagers jika dibutuhkan
         ];
     }
+
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withCount('siswa');
+    }
+
 
     public static function getPages(): array
     {

@@ -23,7 +23,6 @@ class Tugas extends Model
         'tanggal_deadline' => 'date',
     ];
 
-    // Relasi ke mata pelajaran
     public function mapel()
     {
         return $this->belongsTo(MataPelajaran::class, 'mapel_id');
