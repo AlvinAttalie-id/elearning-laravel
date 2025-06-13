@@ -22,4 +22,9 @@ class JawabanTugas extends Model
     {
         return $this->belongsTo(Siswa::class);
     }
+
+    public function nilai()
+    {
+        return $this->hasOne(Nilai::class, 'jawaban_tugas_id');
+    }
 }

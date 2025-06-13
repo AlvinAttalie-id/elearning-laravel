@@ -14,7 +14,9 @@ class Nilai extends Model
     protected $fillable = [
         'siswa_id',
         'mapel_id',
+        'tugas_id',           // atau 'jawaban_tugas_id'
         'nilai',
+        'feedback',
     ];
 
     // Relasi ke Siswa
@@ -26,6 +28,11 @@ class Nilai extends Model
     public function tugas()
     {
         return $this->belongsTo(Tugas::class);
+    }
+
+    public function jawaban()
+    {
+        return $this->belongsTo(JawabanTugas::class, 'jawaban_tugas_id');
     }
 
     // Relasi ke Mata Pelajaran

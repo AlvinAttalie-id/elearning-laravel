@@ -34,7 +34,7 @@ class TugasResource extends Resource
                     ->options(Kelas::all()->pluck('nama', 'id'))
                     ->searchable()
                     ->required()
-                    ->reactive(), // untuk trigger perubahan
+                    ->reactive(),
 
                 Select::make('mapel_id')
                     ->label('Mata Pelajaran')

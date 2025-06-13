@@ -40,6 +40,12 @@ class Siswa extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getNamaAttribute(): string
+    {
+        return $this->user->name ?? '-';
+    }
+
+
     public function jawabanTugas()
     {
         return $this->hasMany(JawabanTugas::class);

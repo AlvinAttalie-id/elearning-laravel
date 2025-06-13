@@ -23,19 +23,33 @@ class JawabanRelationManager extends RelationManager
                 TextColumn::make('siswa.nama')->label('Siswa'),
                 TextColumn::make('submitted_at')->label('Dikumpulkan')->since(),
                 TextColumn::make('jawaban')->label('Jawaban')->limit(50),
-                TextColumn::make('nilai')->label('Nilai'),
-                TextColumn::make('feedback')->label('Feedback')->limit(30),
+
+                // ambil melalui relasi nilai
+                TextColumn::make('nilai.nilai')->label('Nilai'),
+                TextColumn::make('nilai.feedback')->label('Feedback')->limit(30),
             ])
             ->actions([
                 Action::make('nilai')
                     ->label('Lihat / Nilai')
                     ->modalHeading('Penilaian Jawaban')
                     ->form([
-                        Textarea::make('feedback'),
-                        TextInput::make('nilai')->numeric()->minValue(0)->maxValue(100),
+                        Textarea::make('feedback')->label('Feedback'),
+                        TextInput::make('nilai')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->label('Nilai'),
                     ])
                     ->action(function (JawabanTugas $record, array $data) {
-                        $record->update($data);
+                        // buat atau perbarui satu baris di tabel nilai
+                        $record->nilai()->updateOrCreate(
+                            [
+                                'siswa_id'  => $record->siswa_id,
+                                'mapel_id'  => $record->tugas->mapel_id,
+                                // 'tugas_id' => $record->tugas_id,          // jika pakai tugas_id
+                            ],
+                            $data
+                        );
                     }),
             ]);
     }
