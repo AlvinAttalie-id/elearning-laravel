@@ -10,18 +10,33 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet" />
+
+    <!-- Styles & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased text-gray-900">
+<body class="font-sans antialiased text-gray-900 bg-gray-50">
     <div>
-        <div class="">
-            {{ $slot }}
-        </div>
+        {{ $slot }}
     </div>
+
+    <!-- Lucide Icons -->
+    <script type="module">
+        import {
+            createIcons
+        } from 'https://cdn.jsdelivr.net/npm/lucide@latest/+esm';
+        createIcons();
+    </script>
+
+    <!-- AOS Animation -->
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
 </body>
 
 </html>
