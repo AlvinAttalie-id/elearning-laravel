@@ -12,14 +12,25 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="//unpkg.com/alpinejs" defer></script>
+
 </head>
 
 <body class="font-sans antialiased text-gray-800 bg-gray-100">
-    <div class="min-h-screen">
+    {{-- Notifcation Toast --}}
+    @if (session('success'))
+        <x-notification-toast type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-notification-toast type="error" :message="session('error')" />
+    @endif
+
+    <div class="min-h-screen bg-white">
         @include('layouts.navigation')
 
         <!-- Page Heading -->
@@ -38,12 +49,11 @@
     </div>
 
     <!-- Lucide Icons -->
-    <script type="module">
-        import {
-            createIcons
-        } from 'https://cdn.jsdelivr.net/npm/lucide@latest/+esm'
-        createIcons()
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons()
     </script>
+
 </body>
 
 </html>

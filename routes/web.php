@@ -33,6 +33,11 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
         Route::get('/kelas/{id}', [KelasController::class, 'show'])->name('kelas.show');
         Route::get('/kelas-saya', [KelasController::class, 'kelasSaya'])->name('kelas.saya');
+        Route::post('/kelas/{id}/join', [KelasController::class, 'join'])->name('kelas.join')->middleware('auth');
+
+        Route::get('/kelas-saya/{id}', [KelasController::class, 'showSaya'])->name('kelas.show-saya');
+        Route::get('/kelas-saya', [KelasController::class, 'indexKelasSaya'])->name('kelas.saya');
+        Route::delete('/kelas/{id}/keluar', [KelasController::class, 'keluar'])->name('kelas.keluar')->middleware(['auth', 'role:Murid']);
     });
 });
 

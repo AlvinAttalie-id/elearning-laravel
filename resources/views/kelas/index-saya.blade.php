@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-bold leading-tight text-gray-900">
-                {{ __('Daftar Kelas') }}
+                {{ __('Kelas Anda') }}
             </h2>
             @role('Admin')
                 <span class="text-sm text-gray-500">Halo, Admin!</span>
@@ -17,7 +17,7 @@
     <div class="py-10">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                @forelse ($kelasBelumJoin as $kelas)
+                @forelse ($kelasSaya as $kelas)
                     @php
                         $jumlahMapel = $kelas->mataPelajaran->count();
                         $mapelPreview = $kelas->mataPelajaran->take(3);
@@ -53,24 +53,16 @@
                         </p>
 
                         <div class="flex justify-end mt-4">
-                            @if ($kelasSaya && $kelasSaya != $kelas->id)
-                                <button disabled
-                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gray-400 rounded-full shadow cursor-not-allowed">
-                                    <i class="fas fa-ban"></i>
-                                    Sudah Bergabung di Kelas Lain
-                                </button>
-                            @else
-                                <a href="{{ route('kelas.show', $kelas->id) }}"
-                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-blue-600 rounded-full shadow hover:bg-blue-700 hover:shadow-md active:bg-blue-800">
-                                    <i class="fas fa-eye"></i>
-                                    Lihat Detail
-                                </a>
-                            @endif
+                            <a href="{{ route('kelas.show-saya', $kelas->id) }}"
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-blue-600 rounded-full shadow hover:bg-blue-700 hover:shadow-md active:bg-blue-800">
+                                <i class="fas fa-eye"></i>
+                                Lihat Detail
+                            </a>
                         </div>
                     </div>
                     @empty
                         <div class="text-center text-gray-500 col-span-full">
-                            <p><i class="mr-2 fas fa-info-circle"></i> Semua kelas telah Anda ikuti.</p>
+                            <p><i class="mr-2 fas fa-info-circle"></i> Anda belum tergabung di kelas manapun.</p>
                         </div>
                     @endforelse
                 </div>
