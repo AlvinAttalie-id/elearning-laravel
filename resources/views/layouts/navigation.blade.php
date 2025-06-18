@@ -20,8 +20,6 @@
                     </x-nav-link>
                 @endrole
 
-                <span class="text-gray-400 cursor-not-allowed">Mata Pelajaran</span>
-                <span class="text-gray-400 cursor-not-allowed">Jadwal</span>
             </div>
 
             <!-- User Menu -->

@@ -97,4 +97,25 @@ class TugasController extends Controller
         return redirect()->route('tugas.kelas-mapel', ['kelas' => $tugas->kelas_id, 'mapel' => $tugas->mapel_id])
             ->with('success', 'Jawaban berhasil dikirim.');
     }
+
+    public function belumDikerjakan()
+    {
+        $user = Auth::user();
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(403, 'Akses hanya untuk murid.');
+        }
+
+        // Ambil semua tugas yang belum dijawab oleh siswa
+        $tugasBelum = Tugas::where('kelas_id', $siswa->kelas_id)
+            ->whereDoesntHave('jawaban', function ($query) use ($siswa) {
+                $query->where('siswa_id', $siswa->id);
+            })
+            ->with(['mapel', 'kelas'])
+            ->orderByDesc('tanggal_deadline')
+            ->get();
+
+        return view('tugas.belum', compact('tugasBelum'));
+    }
 }

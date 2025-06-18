@@ -1,20 +1,10 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold leading-tight text-gray-900">
-                {{ __('Kelas Anda') }}
-            </h2>
-            @role('Admin')
-                <span class="text-sm text-gray-500">Halo, Admin!</span>
-                @elserole('Guru')
-                <span class="text-sm text-gray-500">Halo, Guru!</span>
-                @elserole('Murid')
-                <span class="text-sm text-gray-500">Halo, Murid!</span>
-            @endrole
-        </div>
-    </x-slot>
 
-    <div class="py-10">
+    <div class="px-4 py-10 mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3">
+            <i data-lucide="school" class="w-6 h-6 text-indigo-500"></i>
+            <h2 class="text-2xl font-bold text-gray-800">{{ __('Kelas Anda') }}</h2>
+        </div>
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @forelse ($kelasSaya as $kelas)
@@ -68,4 +58,13 @@
                 </div>
             </div>
         </div>
+        {{-- Tombol Floating Kembali --}}
+        <div class="fixed z-50 bottom-8 left-8">
+            <a href="{{ route('dashboard') }}"
+                class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
+                <i class="mr-2 fas fa-arrow-left"></i>
+                Kembali
+            </a>
+        </div>
+
     </x-app-layout>

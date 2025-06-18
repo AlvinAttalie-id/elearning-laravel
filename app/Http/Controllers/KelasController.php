@@ -62,8 +62,8 @@ class KelasController extends Controller
 
     public function showSaya($id)
     {
-        $user = Auth::user();
-        $siswa = $user->siswa;
+        $user   = Auth::user();
+        $siswa  = $user->siswa;
 
         $kelas = Kelas::with([
             'waliKelas.user',
@@ -75,26 +75,30 @@ class KelasController extends Controller
             abort(403, 'Anda tidak memiliki akses ke kelas ini.');
         }
 
-        $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa) {
+        $totalTugasBelum = 0;
+
+        $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa, &$totalTugasBelum) {
             $jumlahTugasBelum = $mapel->tugas->filter(function ($tugas) use ($siswa) {
                 return $tugas->jawaban->where('siswa_id', $siswa->id)->isEmpty();
             })->count();
 
-            return (object)[
-                'id' => $mapel->id,
-                'nama' => $mapel->nama_mapel,
-                'guru' => $mapel->guru?->user?->name ?? '-',
-                'jumlah_tugas' => $mapel->tugas->count(),
-                'jumlah_tugas_belum' => $jumlahTugasBelum,
+            $totalTugasBelum += $jumlahTugasBelum;
+
+            return (object) [
+                'id'                  => $mapel->id,
+                'nama'                => $mapel->nama_mapel,
+                'guru'                => $mapel->guru?->user?->name ?? '-',
+                'jumlah_tugas'        => $mapel->tugas->count(),
+                'jumlah_tugas_belum'  => $jumlahTugasBelum,
             ];
         });
 
         return view('kelas.show-saya', [
-            'kelas' => $kelas,
-            'mapelList' => $mapelList,
+            'kelas'            => $kelas,
+            'mapelList'        => $mapelList,
+            'totalTugasBelum'  => $totalTugasBelum,
         ]);
     }
-
 
     public function indexKelasSaya()
     {

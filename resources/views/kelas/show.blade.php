@@ -1,75 +1,77 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold leading-tight text-gray-900">
-                Detail Kelas: {{ $kelas->nama }}
-            </h2>
+    <div class="px-4 py-10 mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8" x-data="{ showModal: false }">
+        <div class="flex items-center gap-3">
+            <i data-lucide="school" class="w-6 h-6 text-indigo-500"></i>
+            <h2 class="text-2xl font-bold text-gray-800">Detail Kelas: {{ $kelas->nama }}</h2>
         </div>
-    </x-slot>
 
-    <div class="mx-10" x-data="{ showModal: false }">
-        <div class="max-w-4xl px-4 mx-auto sm:px-6 lg:px-8">
-            <div class="mb-4">
-                <a href="{{ route('kelas.index') }}"
-                    class="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium text-white transition-all duration-200 bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 hover:shadow-md active:bg-indigo-800">
-                    <i class="fas fa-arrow-left"></i>
-                    Kembali ke Daftar Kelas
-                </a>
-            </div>
+        {{-- Informasi Kelas --}}
+        <div class="p-6 bg-white shadow rounded-xl">
+            <h3 class="mb-4 text-lg font-semibold text-gray-800">Informasi Kelas</h3>
+            <p class="mb-2 text-gray-700">
+                <strong>Wali Kelas:</strong> {{ $kelas->waliKelas->user->name ?? '-' }}
+            </p>
+            <p class="mb-4 text-gray-700">
+                <strong>Jumlah Siswa:</strong> {{ $kelas->siswa->count() }}
+            </p>
+            <p class="text-gray-700">
+                <strong>Total Mata Pelajaran:</strong>
+                <span
+                    class="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
+                    {{ $kelas->mataPelajaran->count() }} Mapel
+                </span>
+            </p>
+        </div>
 
-            <div class="p-6 transition bg-white shadow-md rounded-2xl hover:shadow-lg">
-                <div class="mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">Informasi Kelas</h3>
-                    <div class="mt-2 space-y-2 text-gray-700">
-                        <p><strong>Wali Kelas:</strong> {{ $kelas->waliKelas->user->name ?? '-' }}</p>
-                        <p><strong>Jumlah Siswa:</strong> {{ $kelas->siswa->count() }}</p>
+        {{-- Daftar Mata Pelajaran (dalam satu div card) --}}
+        <div class="p-6 bg-white shadow rounded-xl">
+            <h4 class="mb-4 text-lg font-semibold text-gray-800">Mata Pelajaran</h4>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                @forelse ($kelas->mataPelajaran as $mapel)
+                    <div class="px-4 py-2 text-gray-700 border rounded-md shadow-sm bg-gray-50 hover:bg-gray-100">
+                        {{ $mapel->nama_mapel }}
                     </div>
-                </div>
-
-                <div>
-                    <h4 class="font-semibold text-gray-800 text-md">Mata Pelajaran</h4>
-                    <div class="grid grid-cols-1 gap-3 mt-3 text-gray-700 sm:grid-cols-2 md:grid-cols-3">
-                        @forelse ($kelas->mataPelajaran as $mapel)
-                            <div class="px-4 py-2 border rounded-md shadow-sm bg-gray-50 hover:bg-gray-100">
-                                {{ $mapel->nama_mapel }}
-                            </div>
-                        @empty
-                            <div class="italic text-gray-500 col-span-full">
-                                Tidak ada mata pelajaran
-                            </div>
-                        @endforelse
+                @empty
+                    <div class="italic text-gray-500 col-span-full">
+                        Tidak ada mata pelajaran
                     </div>
-                </div>
+                @endforelse
             </div>
         </div>
 
-        <!-- Tombol Join -->
+        {{-- Tombol Floating Join/Keterangan --}}
         @if ($sudahJoinKelasIni)
             <button type="button" disabled
-                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-gray-400 rounded-full shadow-lg cursor-not-allowed bottom-6 right-6">
+                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-gray-400 rounded-full shadow-lg cursor-not-allowed bottom-8 right-8">
                 <i class="fas fa-check-circle"></i>
                 Anda Sudah Bergabung
             </button>
         @elseif ($sudahJoinKelasLain)
             <button type="button" disabled
-                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-gray-400 rounded-full shadow-lg cursor-not-allowed bottom-6 right-6">
+                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-gray-400 rounded-full shadow-lg cursor-not-allowed bottom-8 right-8">
                 <i class="fas fa-ban"></i>
                 Sudah Bergabung di Kelas Lain
             </button>
         @else
             <button type="button" @click="showModal = true"
-                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-all duration-300 bg-green-600 rounded-full shadow-lg bottom-6 right-6 hover:bg-green-700 hover:shadow-xl">
+                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-green-600 rounded-full shadow-lg bottom-8 right-8 hover:bg-green-700">
                 <i class="fas fa-sign-in-alt"></i>
                 Join Kelas
             </button>
         @endif
 
-        <!-- Modal Join -->
+        {{-- Tombol Floating Kembali --}}
+        <div class="fixed z-50 bottom-8 left-8">
+            <a href="{{ route('kelas.index') }}"
+                class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                Kembali
+            </a>
+        </div>
+
+        {{-- Modal Join --}}
         @if (!$sudahJoinKelasLain && !$sudahJoinKelasIni)
-            <div x-show="showModal" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-90"
+            <div x-show="showModal" x-transition
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div @click.away="showModal = false" class="w-full max-w-md p-6 bg-white shadow-lg rounded-xl">
                     <h2 class="mb-4 text-lg font-semibold text-gray-800">
@@ -80,19 +82,19 @@
                     </p>
                     <div class="flex justify-end space-x-3">
                         <button @click="showModal = false"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-gray-500 rounded-lg shadow hover:bg-gray-600">
-                            <i class="fas fa-times"></i> Batal
+                            class="px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600">
+                            Batal
                         </button>
                         <form action="{{ route('kelas.join', $kelas->id) }}" method="POST">
                             @csrf
                             <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-lg shadow hover:bg-indigo-700">
-                                <i class="fas fa-check"></i> Ya, Gabung
+                                class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                                Ya, Gabung
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         @endif
-
+    </div>
 </x-app-layout>

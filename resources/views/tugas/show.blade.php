@@ -1,10 +1,11 @@
 <x-app-layout>
-    <div class="flex items-center gap-3 mb-6">
-        <i data-lucide="clipboard-list" class="w-6 h-6 text-indigo-600"></i>
-        <h2 class="text-2xl font-bold text-gray-800">Jawab Tugas - {{ $tugas->judul }}</h2>
-    </div>
 
-    <div class="py-6">
+
+    <div class="px-4 py-10 mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
+        <div class="flex items-center gap-3 mb-6">
+            <i data-lucide="clipboard-list" class="w-6 h-6 text-indigo-600"></i>
+            <h2 class="text-2xl font-bold text-gray-800">Jawab Tugas - {{ $tugas->judul }}</h2>
+        </div>
         <div class="max-w-3xl p-6 mx-auto space-y-4 bg-white border shadow rounded-xl">
             {{-- Info Tugas --}}
             <div>
