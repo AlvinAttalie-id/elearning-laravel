@@ -16,7 +16,7 @@
     <link href="https://unpkg.com/aos@next/dist/aos.css" rel="stylesheet" />
 
     <!-- Styles & Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/textfiled.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased text-gray-900 bg-gray-50">
@@ -25,11 +25,9 @@
     </div>
 
     <!-- Lucide Icons -->
-    <script type="module">
-        import {
-            createIcons
-        } from 'https://cdn.jsdelivr.net/npm/lucide@latest/+esm';
-        createIcons();
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        lucide.createIcons()
     </script>
 
     <!-- AOS Animation -->
