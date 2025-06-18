@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kelas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\MataPelajaran;
 
 class KelasController extends Controller
 {
@@ -25,8 +26,6 @@ class KelasController extends Controller
 
         return view('kelas.index', compact('kelasBelumJoin', 'kelasSaya'));
     }
-
-
 
     public function show($id)
     {
@@ -63,20 +62,39 @@ class KelasController extends Controller
 
     public function showSaya($id)
     {
-        $kelas = Kelas::with(['waliKelas.user', 'mataPelajaran', 'siswa'])->findOrFail($id);
+        $user = Auth::user();
+        $siswa = $user->siswa;
 
-        // Ambil ID user yang sedang login
-        $userId = Auth::id();
+        $kelas = Kelas::with([
+            'waliKelas.user',
+            'mataPelajaran.guru.user',
+            'mataPelajaran.tugas.jawaban',
+        ])->findOrFail($id);
 
-        // Cek apakah user merupakan siswa di kelas ini
-        $isAnggotaKelas = $kelas->siswa->pluck('user_id')->contains($userId);
-
-        if (! $isAnggotaKelas) {
+        if (!$siswa || $siswa->kelas_id != $kelas->id) {
             abort(403, 'Anda tidak memiliki akses ke kelas ini.');
         }
 
-        return view('kelas.show-saya', compact('kelas'));
+        $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa) {
+            $jumlahTugasBelum = $mapel->tugas->filter(function ($tugas) use ($siswa) {
+                return $tugas->jawaban->where('siswa_id', $siswa->id)->isEmpty();
+            })->count();
+
+            return (object)[
+                'id' => $mapel->id,
+                'nama' => $mapel->nama_mapel,
+                'guru' => $mapel->guru?->user?->name ?? '-',
+                'jumlah_tugas' => $mapel->tugas->count(),
+                'jumlah_tugas_belum' => $jumlahTugasBelum,
+            ];
+        });
+
+        return view('kelas.show-saya', [
+            'kelas' => $kelas,
+            'mapelList' => $mapelList,
+        ]);
     }
+
 
     public function indexKelasSaya()
     {
@@ -89,10 +107,14 @@ class KelasController extends Controller
         }
 
         // Ambil kelas yang diikuti oleh siswa (jika sudah punya kelas)
-        $kelasSaya = $siswa->kelas()->with(['waliKelas.user', 'mataPelajaran'])->get();
+        $kelasSaya = $siswa->kelas()->with([
+            'waliKelas.user',
+            'mataPelajaran.tugas' // Eager load tugas agar tidak N+1
+        ])->get();
 
         return view('kelas.index-saya', compact('kelasSaya'));
     }
+
 
     public function keluar($id)
     {

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Filament\Resources\KelasResource\Pages\SiswaKelas;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TugasController;
 
 // Halaman depan
 Route::get('/', function () {
@@ -38,6 +39,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/kelas-saya/{id}', [KelasController::class, 'showSaya'])->name('kelas.show-saya');
         Route::get('/kelas-saya', [KelasController::class, 'indexKelasSaya'])->name('kelas.saya');
         Route::delete('/kelas/{id}/keluar', [KelasController::class, 'keluar'])->name('kelas.keluar')->middleware(['auth', 'role:Murid']);
+
+        Route::get('/kelas/{kelas}/mapel/{mapel}/tugas', [TugasController::class, 'indexByKelasMapel'])
+            ->name('tugas.kelas-mapel')
+            ->middleware(['auth']);
+        Route::get('/kelas/{kelas}/mapel/{mapel}/tugas/{tugas}', [TugasController::class, 'show'])
+            ->middleware(['auth'])->name('tugas.show');
+        Route::post('/tugas/{tugas}/jawab', [TugasController::class, 'jawab'])->name('tugas.jawab');
+        Route::post('/tugas/{id}/jawab', [TugasController::class, 'jawab'])->name('tugas.jawab');
     });
 });
 
