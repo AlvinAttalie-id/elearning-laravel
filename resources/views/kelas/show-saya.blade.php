@@ -1,4 +1,5 @@
 <x-app-layout>
+
     <div class="px-4 py-12 mx-auto space-y-8 max-w-7xl sm:px-6 lg:px-8" x-data="{ showKeluarModal: false }">
 
         <!-- Header + Notifikasi -->
@@ -103,8 +104,9 @@
         </div>
 
         <!-- Modal Konfirmasi Keluar -->
-        <div x-show="showKeluarModal" x-transition
+        <div x-show="showKeluarModal" x-transition x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+
             <div @click.away="showKeluarModal = false" class="w-full max-w-md p-6 bg-white shadow-lg rounded-xl">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">Konfirmasi Keluar Kelas</h2>
                 <p class="mb-6 text-sm text-gray-600">

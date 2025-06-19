@@ -21,8 +21,9 @@
 </head>
 
 <body class="font-sans antialiased text-gray-800 bg-gray-100">
-    <!-- =======================  NAVBAR  ======================= -->
-    <nav x-data="{ open: false }" class="bg-white border-b shadow-sm">
+
+    <!-- NAVBAR -->
+    <nav x-data="{ open: false }" class="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="flex items-center gap-2">
                 <i class="text-xl text-indigo-600 fa-solid fa-graduation-cap"></i>
@@ -82,7 +83,7 @@
         </div>
     </nav>
 
-    <!-- =======================  HERO  ======================= -->
+    <!--  HERO  -->
     <section class="relative text-white bg-gradient-to-r from-indigo-600 to-purple-600">
         <div class="px-4 py-20 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
             <h1 class="mb-4 text-4xl font-extrabold leading-tight sm:text-5xl">
@@ -102,7 +103,7 @@
         </svg>
     </section>
 
-    <!-- =======================  FEATURES  ======================= -->
+    <!--  FEATURES  -->
     <section id="fitur" class="py-16 bg-gray-50">
         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h2 class="mb-12 text-3xl font-bold text-center">Kenapa Memilih Kami?</h2>
@@ -128,7 +129,7 @@
         </div>
     </section>
 
-    <!-- =======================  STATISTICS  ======================= -->
+    <!--  STATISTICS  -->
     <section class="py-16">
         <div class="grid gap-8 px-4 mx-auto text-center max-w-7xl sm:px-6 lg:px-8 md:grid-cols-3">
             <div>
@@ -146,7 +147,7 @@
         </div>
     </section>
 
-    <!-- =======================  CTA  ======================= -->
+    <!--  CTA  -->
     <section class="text-white bg-indigo-600">
         <div class="px-4 py-16 mx-auto text-center max-w-7xl sm:px-6 lg:px-8">
             <h2 class="mb-4 text-3xl font-bold">Siap Memulai?</h2>
@@ -158,7 +159,7 @@
         </div>
     </section>
 
-    <!-- =======================  FOOTER  ======================= -->
+    <!--  FOOTER  -->
     <footer id="kontak" class="text-gray-300 bg-gray-800">
         <div class="grid gap-8 px-4 py-10 mx-auto max-w-7xl sm:px-6 lg:px-8 md:grid-cols-2">
             <div>
@@ -191,10 +192,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
     <script>
-        document.addEventListener('alpine:init', () => {
-            AOS.init();
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                once: true, // opsional, supaya animasi hanya terjadi sekali
+            });
         });
     </script>
+
 </body>
 
 </html>

@@ -77,9 +77,6 @@
             </x-responsive-nav-link>
         @endrole
 
-        <div class="px-3 py-2 text-sm text-gray-400">Mata Pelajaran</div>
-        <div class="px-3 py-2 text-sm text-gray-400">Jadwal</div>
-
         <div class="pt-4 mt-4 border-t border-gray-200">
             <div class="text-sm text-gray-800">{{ Auth::user()->name }}</div>
             <div class="mb-3 text-sm text-gray-500">{{ Auth::user()->email }}</div>

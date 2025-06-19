@@ -107,20 +107,22 @@
 
                                     {{-- Badges --}}
                                     <div class="flex flex-wrap gap-2 mt-3">
-                                        {{-- Tanggal --}}
+                                        {{-- Tanggal Deadline --}}
                                         <span
-                                            class="inline-flex items-center px-3 py-1 text-xs font-medium text-green-700 bg-green-100 rounded-full">
+                                            class="inline-flex items-center px-3 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full">
                                             <i data-lucide="calendar" class="w-4 h-4 mr-1"></i>
-                                            {{ $tugas->tanggal_deadline->translatedFormat('d F Y') }}
+                                            <span class="font-semibold">Deadline:</span>
+                                            &nbsp;{{ $tugas->tanggal_deadline->translatedFormat('d F Y') }}
                                         </span>
 
-                                        {{-- Jam --}}
+                                        {{-- Jam Deadline --}}
                                         <span
                                             class="inline-flex items-center px-3 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded-full">
                                             <i data-lucide="clock" class="w-4 h-4 mr-1"></i>
                                             {{ $tugas->tanggal_deadline->translatedFormat('H:i') }}
                                         </span>
                                     </div>
+
                                 </div>
                             </div>
 

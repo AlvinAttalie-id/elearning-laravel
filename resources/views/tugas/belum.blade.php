@@ -62,10 +62,12 @@
 
     <!-- Tombol Kembali -->
     <div class="fixed z-40 bottom-6 left-6">
-        <a href="{{ route('kelas.saya') }}"
-            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
+        <a href="{{ route('kelas.show-saya', $kelas->id) }}"
+            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
             Kembali
         </a>
     </div>
+
+
 </x-app-layout>

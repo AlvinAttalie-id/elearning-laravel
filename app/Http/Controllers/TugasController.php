@@ -107,7 +107,8 @@ class TugasController extends Controller
             abort(403, 'Akses hanya untuk murid.');
         }
 
-        // Ambil semua tugas yang belum dijawab oleh siswa
+        $kelas = $siswa->kelas;
+
         $tugasBelum = Tugas::where('kelas_id', $siswa->kelas_id)
             ->whereDoesntHave('jawaban', function ($query) use ($siswa) {
                 $query->where('siswa_id', $siswa->id);
@@ -116,6 +117,6 @@ class TugasController extends Controller
             ->orderByDesc('tanggal_deadline')
             ->get();
 
-        return view('tugas.belum', compact('tugasBelum'));
+        return view('tugas.belum', compact('tugasBelum', 'kelas'));
     }
 }
