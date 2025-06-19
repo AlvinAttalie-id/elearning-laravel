@@ -27,6 +27,24 @@
                     <x-input-error :messages="$errors->get('email')" class="mt-1 text-xs" />
                 </div>
 
+                {{-- Alamat --}}
+                <div>
+                    <label for="alamat" class="block mb-1 text-sm font-medium text-gray-700">Alamat</label>
+                    <input id="alamat" name="alamat" type="text" value="{{ old('alamat') }}" required
+                        class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <x-input-error :messages="$errors->get('alamat')" class="mt-1 text-xs" />
+                </div>
+
+                {{-- Tanggal Lahir --}}
+                <div>
+                    <label for="tanggal_lahir" class="block mb-1 text-sm font-medium text-gray-700">Tanggal
+                        Lahir</label>
+                    <input id="tanggal_lahir" name="tanggal_lahir" type="date" value="{{ old('tanggal_lahir') }}"
+                        required
+                        class="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-1 text-xs" />
+                </div>
+
                 {{-- Password --}}
                 <div>
                     <label for="password" class="block mb-1 text-sm font-medium text-gray-700">Password</label>
@@ -47,7 +65,7 @@
 
                 {{-- Submit --}}
                 <div class="flex items-center justify-between">
-                    <a class="text-sm text-gray-600 hover:text-indigo-600" href="{{ route('login') }}">
+                    <a class="font-medium text-indigo-600 hover:underline" href="{{ route('login') }}">
                         Sudah punya akun?
                     </a>
                     <button type="submit"

@@ -20,6 +20,14 @@
 </head>
 
 <body class="font-sans antialiased text-gray-900 bg-gray-50">
+    {{-- Notifcation Toast --}}
+    @if (session('success'))
+        <x-notification-toast type="success" :message="session('success')" />
+    @endif
+
+    @if (session('error'))
+        <x-notification-toast type="error" :message="session('error')" />
+    @endif
     <div>
         {{ $slot }}
     </div>
