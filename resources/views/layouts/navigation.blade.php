@@ -67,15 +67,6 @@
 
     <!-- Mobile Menu -->
     <div :class="{ 'block': open, 'hidden': !open }" class="px-4 pb-4 sm:hidden">
-        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-            Dashboard
-        </x-responsive-nav-link>
-
-        @role('Murid')
-            <x-responsive-nav-link :href="route('kelas.index')" :active="request()->routeIs('kelas.index') || request()->is('kelas*')">
-                Kelas
-            </x-responsive-nav-link>
-        @endrole
 
         <div class="pt-4 mt-4 border-t border-gray-200">
             <div class="text-sm text-gray-800">{{ Auth::user()->name }}</div>
