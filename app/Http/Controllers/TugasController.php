@@ -8,6 +8,7 @@ use App\Models\Tugas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use App\Models\MataPelajaran;
 
 class TugasController extends Controller
 {
@@ -118,5 +119,35 @@ class TugasController extends Controller
             ->get();
 
         return view('tugas.belum', compact('tugasBelum', 'kelas'));
+    }
+
+    //Guru Section
+    public function create($mapelId, $kelasId)
+    {
+        $mapel = MataPelajaran::findOrFail($mapelId);
+        $kelas = Kelas::findOrFail($kelasId);
+        $tugasList = Tugas::where('mapel_id', $mapelId)->where('kelas_id', $kelasId)->latest()->get();
+
+        return view('guru.tugas.create', compact('mapel', 'kelas', 'tugasList'));
+    }
+
+    public function store(Request $request, $mapelId, $kelasId)
+    {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'tanggal_deadline' => 'required|date|after_or_equal:today',
+        ]);
+
+        Tugas::create([
+            'mapel_id' => $mapelId,
+            'kelas_id' => $kelasId,
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'tanggal_deadline' => $request->tanggal_deadline,
+        ]);
+
+        return redirect()->route('guru.tugas.create', [$mapelId, $kelasId])
+            ->with('success', 'Tugas berhasil dibuat.');
     }
 }

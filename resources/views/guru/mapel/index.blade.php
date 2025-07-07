@@ -25,10 +25,10 @@
                     </p>
 
                     <div class="flex justify-end mt-4">
-                        <a href="#"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-blue-600 rounded-full shadow hover:bg-blue-700 hover:shadow-md active:bg-blue-800">
-                            <i class="fas fa-tasks"></i>
-                            Buat Tugas
+                        <a href="{{ route('guru.mapel.kelas', $mapel->id) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-indigo-600 rounded-full shadow hover:bg-indigo-700 hover:shadow-md">
+                            <i class="fas fa-chalkboard"></i>
+                            Pilih Kelas
                         </a>
                     </div>
                 </div>

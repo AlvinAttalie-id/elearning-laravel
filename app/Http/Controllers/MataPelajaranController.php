@@ -40,4 +40,15 @@ class MataPelajaranController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Mata pelajaran berhasil disimpan.');
     }
+
+    public function kelasList($mapelId)
+    {
+        $guru = Auth::user()->guru;
+
+        $mapel = MataPelajaran::with('kelas')->where('id', $mapelId)->where('guru_id', $guru->id)->firstOrFail();
+
+        $kelasList = $mapel->kelas;
+
+        return view('guru.kelas.index', compact('mapel', 'kelasList'));
+    }
 }

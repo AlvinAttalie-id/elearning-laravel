@@ -65,6 +65,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::prefix('guru')->group(function () {
             Route::get('/pilih-mapel',  [MataPelajaranController::class, 'index'])->name('guru.pilih-mapel');
             Route::post('/pilih-mapel', [MataPelajaranController::class, 'store'])->name('guru.simpan-mapel');
+
+            Route::get('/mapel/{mapel}/kelas', [MataPelajaranController::class, 'kelasList'])->name('guru.mapel.kelas');
+
+            Route::get('/mapel/{mapel}/kelas/{kelas}/tugas/create', [TugasController::class, 'create'])->name('guru.tugas.create');
+            Route::post('/mapel/{mapel}/kelas/{kelas}/tugas', [TugasController::class, 'store'])->name('guru.tugas.store');
         });
     });
 });
