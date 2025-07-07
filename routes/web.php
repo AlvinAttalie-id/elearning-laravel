@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     DashboardController,
     ProfileController,
     KelasController,
+    MataPelajaranController,
     TugasController,
 };
 
@@ -60,7 +61,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('tugas.show');
     });
 
-    Route::middleware(RoleMiddleware::class . ':Guru')->group(function () {});
+    Route::middleware(RoleMiddleware::class . ':Guru')->group(function () {
+        Route::prefix('guru')->group(function () {
+            Route::get('/pilih-mapel',  [MataPelajaranController::class, 'index'])->name('guru.pilih-mapel');
+            Route::post('/pilih-mapel', [MataPelajaranController::class, 'store'])->name('guru.simpan-mapel');
+        });
+    });
 });
 
 require __DIR__ . '/auth.php';

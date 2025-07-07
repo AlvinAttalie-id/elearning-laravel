@@ -20,6 +20,12 @@
                     </x-nav-link>
                 @endrole
 
+                @role('Guru')
+                    <x-nav-link :href="route('guru.pilih-mapel')" :active="request()->routeIs('guru.pilih-mapel')">
+                        Mata Pelajaran
+                    </x-nav-link>
+                @endrole
+
             </div>
 
             <!-- User Menu -->
