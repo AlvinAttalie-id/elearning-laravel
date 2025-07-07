@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('jawaban_tugas_id')->constrained('jawaban_tugas')->onDelete('cascade');
             $table->string('file_path');
-            $table->enum('tipe', ['pdf', 'word']);
             $table->timestamps();
         });
     }

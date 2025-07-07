@@ -59,22 +59,33 @@ class TugasController extends Controller
 
     public function jawab(Request $request, $tugasId)
     {
+
+        // Validasi format file dan teks
         $request->validate([
             'jawaban' => 'nullable|string',
-            'file_path' => 'nullable|file|max:2048',
+            'file_path' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+
         ]);
+
+        // Harus isi teks atau unggah file
+        if (empty($request->jawaban) && !$request->hasFile('file_path')) {
+            return redirect()->back()
+                ->withErrors([
+                    'file_path' => 'Isi jawaban teks atau unggah file wajib diisi salah satu.'
+                ])
+                ->withInput();
+        }
 
         $user = Auth::user();
         $siswa = $user->siswa;
-
         $tugas = Tugas::findOrFail($tugasId);
 
-        // Cegah jika bukan dari kelas yang sesuai
+        // Pastikan siswa dari kelas yang sesuai
         if (!$siswa || $siswa->kelas_id !== $tugas->kelas_id) {
             abort(403, 'Akses ditolak.');
         }
 
-        // Cek jika sudah pernah menjawab
+        // Cek jika sudah menjawab
         $existing = JawabanTugas::where('tugas_id', $tugasId)
             ->where('siswa_id', $siswa->id)
             ->first();
@@ -83,12 +94,14 @@ class TugasController extends Controller
             return redirect()->back()->with('error', 'Kamu sudah menjawab tugas ini.');
         }
 
+        // Simpan jawaban
         $jawaban = new JawabanTugas();
         $jawaban->tugas_id = $tugasId;
         $jawaban->siswa_id = $siswa->id;
         $jawaban->jawaban = $request->jawaban;
-        $jawaban->submitted_at = Carbon::now();
+        $jawaban->submitted_at = now();
 
+        // Upload file jika ada
         if ($request->hasFile('file_path')) {
             $file = $request->file('file_path');
             $filename = $file->store('jawaban_tugas', 'public');
@@ -97,8 +110,10 @@ class TugasController extends Controller
 
         $jawaban->save();
 
-        return redirect()->route('tugas.kelas-mapel', ['kelas' => $tugas->kelas_id, 'mapel' => $tugas->mapel_id])
-            ->with('success', 'Jawaban berhasil dikirim.');
+        return redirect()->route('tugas.kelas-mapel', [
+            'kelas' => $tugas->kelas_id,
+            'mapel' => $tugas->mapel_id,
+        ])->with('success', 'Jawaban berhasil dikirim.');
     }
 
     public function belumDikerjakan()
