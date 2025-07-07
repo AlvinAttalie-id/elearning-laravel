@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
+use App\Models\Nilai;
+use App\Models\Siswa;
 
 class TugasController extends Controller
 {
@@ -149,5 +151,43 @@ class TugasController extends Controller
 
         return redirect()->route('guru.tugas.create', [$mapelId, $kelasId])
             ->with('success', 'Tugas berhasil dibuat.');
+    }
+
+    public function detail($mapelId, $kelasId, $tugasId)
+    {
+        // Ambil tugas sekaligus relasi kelas dan jawaban + nilai
+        $tugas = Tugas::with(['mapel', 'kelas', 'jawaban.nilai'])->findOrFail($tugasId);
+
+        // Ambil siswa di kelas tugas tersebut dengan user-nya
+        $siswaList = Siswa::with('user')
+            ->where('kelas_id', $tugas->kelas_id)
+            ->paginate(10); // Pagination 10 per halaman
+
+        return view('guru.tugas.detail', compact('tugas', 'siswaList'));
+    }
+
+
+    public function beriNilai(Request $request, $jawaban)
+    {
+        // Validasi input nilai dan feedback
+        $request->validate([
+            'nilai' => 'required|numeric|min:0|max:100',
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+
+        // Ambil jawaban beserta relasi nilai & tugas
+        $jawaban = JawabanTugas::with('nilai', 'tugas')->findOrFail($jawaban);
+
+        // Ambil nilai jika sudah ada atau buat baru
+        $nilai = $jawaban->nilai ?? new Nilai();
+        $nilai->siswa_id = $jawaban->siswa_id;
+        $nilai->mapel_id = $jawaban->tugas->mapel_id;
+        $nilai->tugas_id = $jawaban->tugas_id;
+        $nilai->jawaban_tugas_id = $jawaban->id;
+        $nilai->nilai = $request->input('nilai');
+        $nilai->feedback = $request->input('feedback');
+        $nilai->save();
+
+        return back()->with('success', 'Nilai dan feedback berhasil disimpan.');
     }
 }

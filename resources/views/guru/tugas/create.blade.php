@@ -64,21 +64,25 @@
         {{-- Daftar Tugas --}}
         <div class="mt-10 space-y-6">
             <h3 class="text-xl font-bold text-gray-800">
-                <i class="mr-2 text-indigo-600 fas fa-folder-open"></i> Tugas Sebelumnya
+                <i class="mr-2 text-indigo-600 fas fa-folder-open"></i> Tugas
             </h3>
 
             @forelse ($tugasList as $tugas)
-                <div class="p-4 bg-white border rounded shadow">
+                <a href="{{ route('guru.tugas.detail', ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'tugas' => $tugas->id]) }}"
+                    class="block p-4 transition duration-200 bg-white border rounded shadow hover:shadow-md hover:border-blue-500 group">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-lg font-semibold text-gray-700">{{ $tugas->judul }}</h4>
+                        <h4 class="text-lg font-semibold text-gray-700 group-hover:text-blue-600">{{ $tugas->judul }}
+                        </h4>
                         <span class="text-sm text-gray-500">Deadline:
-                            {{ $tugas->tanggal_deadline->format('d M Y') }}</span>
+                            {{ $tugas->tanggal_deadline->format('d M Y') }}
+                        </span>
                     </div>
                     <p class="mt-2 text-gray-600">{{ $tugas->deskripsi ?? '-' }}</p>
-                </div>
+                </a>
             @empty
                 <p class="text-gray-500">Belum ada tugas untuk kelas ini.</p>
             @endforelse
         </div>
+
     </div>
 </x-app-layout>

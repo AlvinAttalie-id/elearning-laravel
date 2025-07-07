@@ -70,6 +70,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::get('/mapel/{mapel}/kelas/{kelas}/tugas/create', [TugasController::class, 'create'])->name('guru.tugas.create');
             Route::post('/mapel/{mapel}/kelas/{kelas}/tugas', [TugasController::class, 'store'])->name('guru.tugas.store');
+
+            Route::get('/mapel/{mapel}/kelas/{kelas}/tugas/{tugas}', [TugasController::class, 'detail'])
+                ->name('guru.tugas.detail');
+            Route::post('/jawaban/{jawaban}/nilai', [TugasController::class, 'beriNilai'])->name('guru.tugas.nilai');
         });
     });
 });
