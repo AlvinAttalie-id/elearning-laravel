@@ -16,6 +16,7 @@ class Tugas extends Model
         'kelas_id',
         'judul',
         'deskripsi',
+        'link_video',
         'tanggal_deadline',
     ];
 
@@ -42,5 +43,10 @@ class Tugas extends Model
     public function nilai()
     {
         return $this->hasMany(Nilai::class);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(TugasFile::class);
     }
 }

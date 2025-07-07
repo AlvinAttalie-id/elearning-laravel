@@ -21,6 +21,64 @@
                 <p class="mb-2 text-sm text-gray-600"><strong>Deskripsi:</strong> {{ $tugas->deskripsi ?? '-' }}</p>
                 <p class="text-sm text-gray-600"><strong>Deadline:</strong>
                     {{ $tugas->tanggal_deadline->translatedFormat('d F Y H:i') }}</p>
+
+                {{-- Video Tugas --}}
+                @php
+                    function getYoutubeEmbedUrl($url)
+                    {
+                        // Handle youtu.be short links
+                        if (Str::contains($url, 'youtu.be')) {
+                            return 'https://www.youtube.com/embed/' . Str::after($url, 'youtu.be/');
+                        }
+
+                        // Handle full youtube.com links
+                        if (Str::contains($url, 'youtube.com/watch')) {
+                            parse_str(parse_url($url, PHP_URL_QUERY), $query);
+                            return 'https://www.youtube.com/embed/' . ($query['v'] ?? '');
+                        }
+
+                        // Default fallback
+                        return $url;
+                    }
+                @endphp
+
+                @if ($tugas->link_video)
+                    <div class="mt-6">
+                        <h4 class="mb-2 text-sm font-semibold text-gray-700">Video Terkait:</h4>
+                        <div class="aspect-w-16 aspect-h-9">
+                            <iframe class="w-full h-64 rounded-lg" src="{{ getYoutubeEmbedUrl($tugas->link_video) }}"
+                                frameborder="0" allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                @endif
+
+
+                {{-- File Tugas --}}
+                @if ($tugas->files->count())
+                    <div class="mt-6">
+                        <h4 class="mb-4 text-sm font-semibold text-gray-700">File Tugas:</h4>
+                        <div class="space-y-3">
+                            @foreach ($tugas->files as $file)
+                                <div
+                                    class="flex items-center justify-between p-4 border rounded-md shadow-sm bg-gray-50">
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+                                        <span class="text-sm font-medium text-gray-800">
+                                            {{ basename($file->file_path) }}
+                                        </span>
+                                    </div>
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank"
+                                        class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition">
+                                        <i data-lucide="download" class="w-4 h-4"></i>
+                                        Download
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
             </div>
 
             {{-- Jawaban Siswa --}}

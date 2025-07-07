@@ -16,6 +16,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\FileUpload;
 
 class TugasResource extends Resource
 {
@@ -43,7 +45,6 @@ class TugasResource extends Resource
                         if (!$kelasId) return [];
 
                         $kelas = Kelas::with('mataPelajaran')->find($kelasId);
-
                         return $kelas?->mataPelajaran->pluck('nama_mapel', 'id') ?? [];
                     })
                     ->required()
@@ -58,9 +59,32 @@ class TugasResource extends Resource
                     ->label('Deskripsi')
                     ->rows(4),
 
+                TextInput::make('link_video')
+                    ->label('Link Video (YouTube)')
+                    ->url()
+                    ->nullable(),
+
                 DatePicker::make('tanggal_deadline')
                     ->label('Tanggal Deadline')
                     ->required(),
+
+                Repeater::make('files')
+                    ->relationship()
+                    ->label('Lampiran Tugas')
+                    ->schema([
+                        FileUpload::make('file_path')
+                            ->label('File')
+                            ->required()
+                            ->disk('public')
+                            ->directory('tugas/files')
+                            ->acceptedFileTypes([
+                                'application/pdf',
+                                'application/msword', // .doc
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+                            ]),
+                    ])
+                    ->columnSpanFull()
+                    ->addActionLabel('Tambah File'),
             ]);
     }
 
