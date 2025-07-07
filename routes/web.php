@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
+use App\Http\Controllers\Auth\RegisterGuruController;
 use App\Filament\Resources\KelasResource\Pages\SiswaKelas;
 use App\Http\Controllers\{
     DashboardController,
@@ -10,28 +11,19 @@ use App\Http\Controllers\{
     TugasController,
 };
 
-// ────────────────────────────────────────────────────────────────
-// HALAMAN AWAL
-// ────────────────────────────────────────────────────────────────
 Route::view('/', 'welcome');
+Route::get('/register/pengajar', [RegisterGuruController::class, 'create'])->name('register.guru');
+Route::post('/register/pengajar', [RegisterGuruController::class, 'store'])->name('register.guru.store');
 
-// ────────────────────────────────────────────────────────────────
-// FILAMENT: daftar siswa pada kelas (hanya contoh)
-// ────────────────────────────────────────────────────────────────
 Route::middleware('auth')
     ->get('/admin/kelas/{kelas}/siswa', SiswaKelas::class)
     ->name('filament.admin.resources.kelas.siswa');
 
-// ────────────────────────────────────────────────────────────────
-// SEMUA ROUTE YANG MEMBUTUHKAN LOGIN + VERIFIKASI EMAIL
-// ────────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
-    // ─────── PROFILE
     Route::prefix('profile')->group(function () {
         Route::get('/',    [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/',  [ProfileController::class, 'update'])->name('profile.update');
@@ -53,7 +45,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         Route::prefix('tugas')->group(function () {
-            // Route::get('/',             [TugasController::class, 'index'])->name('tugas.index');
             Route::post('{tugas}/jawab', [TugasController::class, 'jawab'])->name('tugas.jawab');
             Route::get('/tugas-belum', [TugasController::class, 'belumDikerjakan'])->name('tugas.belum');
         });
@@ -68,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             [TugasController::class, 'show']
         )->name('tugas.show');
     });
+
+    Route::middleware(RoleMiddleware::class . ':Guru')->group(function () {});
 });
 
 require __DIR__ . '/auth.php';

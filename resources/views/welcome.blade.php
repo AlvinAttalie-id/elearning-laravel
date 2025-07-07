@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>E‑Learning Sekolah</title>
+    <title>E-Learning Sekolah</title>
 
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -30,7 +30,9 @@
 <body class="font-sans antialiased text-gray-800 bg-gray-100">
 
     <!-- NAVBAR -->
-    <nav x-data="{ open: false }" class="sticky top-0 z-50 bg-white border-b shadow-sm">
+    <nav x-data="navbarScroll" x-bind:class="{ 'opacity-0 translate-y-[-100%]': hide }"
+        class="sticky top-0 z-50 transition-all duration-300 ease-in-out bg-white border-b shadow-sm">
+
         <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="flex items-center gap-2">
                 <i class="text-xl text-indigo-600 fa-solid fa-graduation-cap"></i>
@@ -54,9 +56,17 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="px-4 py-2 rounded hover:bg-gray-100">Masuk</a>
+
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}"
-                                class="px-4 py-2 text-white transition bg-indigo-600 rounded hover:bg-indigo-700">Daftar</a>
+                                class="px-4 py-2 text-white transition bg-indigo-600 rounded hover:bg-indigo-700">
+                                Daftar
+                            </a>
+
+                            <a href="{{ route('register.guru') }}"
+                                class="px-4 py-2 text-white transition bg-green-600 rounded hover:bg-green-700">
+                                Daftar Pengajar
+                            </a>
                         @endif
                     @endauth
                 @endif
@@ -69,7 +79,7 @@
         </div>
 
         <!-- Mobile menu -->
-        <div x-show="open" x-collapse class="px-4 pt-2 pb-4 space-y-2 md:hidden">
+        <div x-show="open" x-transition class="px-4 pt-2 pb-4 space-y-2 md:hidden">
             <a href="#fitur" class="block px-3 py-2 rounded hover:bg-gray-100">Fitur</a>
             <a href="#kelas" class="block px-3 py-2 rounded hover:bg-gray-100">Kelas</a>
             <a href="#kontak" class="block px-3 py-2 rounded hover:bg-gray-100">Kontak</a>
@@ -1068,11 +1078,11 @@
     </footer>
 
     <!-- Lucide Icons -->
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         lucide.createIcons()
     </script>
-
     <!-- (Opsional) AOS Animation -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js" defer></script>
@@ -1122,6 +1132,22 @@
             setInitialWidth();
             // Start the slider interval after setting initial width
             setInterval(updateSlider, 2000);
+        });
+    </script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('navbarScroll', () => ({
+                hide: false,
+                open: false,
+                init() {
+                    window.addEventListener('scroll', () => {
+                        const current = window.pageYOffset;
+
+                        // Sembunyikan navbar jika tidak di paling atas
+                        this.hide = current > 0;
+                    });
+                }
+            }));
         });
     </script>
 
