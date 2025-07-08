@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\MataPelajaran;
 use App\Models\Nilai;
 use App\Models\Siswa;
+use App\Models\TugasFile;
 
 class TugasController extends Controller
 {
@@ -154,15 +155,32 @@ class TugasController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'tanggal_deadline' => 'required|date|after_or_equal:today',
+            'files' => 'nullable|array|max:3',
+            'files.*' => 'file|mimes:pdf,doc,docx|max:4096',
+            'youtube_link' => 'nullable|url',
         ]);
 
-        Tugas::create([
+        // Simpan tugas utama terlebih dahulu
+        $tugas = Tugas::create([
             'mapel_id' => $mapelId,
             'kelas_id' => $kelasId,
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'tanggal_deadline' => $request->tanggal_deadline,
+            'link_video' => $request->youtube_link,
         ]);
+
+        // Jika ada file, simpan satu per satu ke tabel tugas_files
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('tugas_files', 'public');
+
+                TugasFile::create([
+                    'tugas_id' => $tugas->id,
+                    'file_path' => $path,
+                ]);
+            }
+        }
 
         return redirect()->route('guru.tugas.create', [$mapelId, $kelasId])
             ->with('success', 'Tugas berhasil dibuat.');

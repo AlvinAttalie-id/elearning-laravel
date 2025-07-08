@@ -45,6 +45,15 @@
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1 text-xs" />
                 </div>
 
+                {{-- Nomor HP --}}
+                <div>
+                    <label for="no_hp" class="block mb-1 text-sm font-medium text-gray-700">Nomor HP</label>
+                    <input id="no_hp" name="no_hp" type="text" value="{{ old('no_hp') }}" required
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+                    <x-input-error :messages="$errors->get('no_hp')" class="mt-1 text-xs" />
+                </div>
+
+
                 {{-- Submit --}}
                 <div class="flex items-center justify-between">
                     <a class="font-medium text-indigo-600 hover:underline" href="{{ route('login') }}">

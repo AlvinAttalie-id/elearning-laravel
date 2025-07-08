@@ -30,23 +30,43 @@
                 </div>
 
                 <form action="{{ route('guru.tugas.store', [$mapel->id, $kelas->id]) }}" method="POST"
-                    class="space-y-4">
+                    enctype="multipart/form-data" class="space-y-4">
                     @csrf
+
+                    <!-- Judul -->
                     <div>
                         <label class="block mb-1 font-semibold text-gray-700">Judul Tugas</label>
                         <input type="text" name="judul" required class="w-full px-4 py-2 border rounded-md" />
                     </div>
 
+                    <!-- Deskripsi -->
                     <div>
                         <label class="block mb-1 font-semibold text-gray-700">Deskripsi</label>
                         <textarea name="deskripsi" rows="3" class="w-full px-4 py-2 border rounded-md"></textarea>
                     </div>
 
+                    <!-- Deadline -->
                     <div>
                         <label class="block mb-1 font-semibold text-gray-700">Tanggal Deadline</label>
                         <input type="date" name="tanggal_deadline" required class="px-4 py-2 border rounded-md" />
                     </div>
 
+                    <!-- File Upload -->
+                    <div>
+                        <label class="block mb-1 font-semibold text-gray-700">Upload File (maks. 3 PDF/Word)</label>
+                        <input type="file" name="files[]" accept=".pdf,.doc,.docx" multiple
+                            class="w-full border rounded-md" />
+                        <small class="text-sm text-gray-500">Maksimum 3 file, format PDF atau Word.</small>
+                    </div>
+
+                    <!-- Link YouTube -->
+                    <div>
+                        <label class="block mb-1 font-semibold text-gray-700">Link YouTube (opsional)</label>
+                        <input type="url" name="youtube_link" placeholder="https://youtube.com/..."
+                            class="w-full px-4 py-2 border rounded-md" />
+                    </div>
+
+                    <!-- Buttons -->
                     <div class="flex justify-end gap-2">
                         <button type="button" @click="showModal = false"
                             class="px-4 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300">
@@ -58,6 +78,7 @@
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
 

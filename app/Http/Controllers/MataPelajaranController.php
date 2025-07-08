@@ -13,16 +13,21 @@ class MataPelajaranController extends Controller
     {
         $guru = Auth::user()->guru;
 
+        if (!$guru) {
+            return redirect()->route('dashboard')->with('error', 'Akun Anda belum terdaftar sebagai guru.');
+        }
+
         if ($guru->mataPelajaran()->exists()) {
-            $mataPelajaranGuru = $guru->mataPelajaran; // ambil mapel yang sudah dimiliki
+            $mataPelajaranGuru = $guru->mataPelajaran;
             return view('guru.mapel.index', compact('mataPelajaranGuru'));
         }
 
-        // Kalau belum punya mapel, tampilkan daftar untuk dipilih
-        $daftarMapel = MataPelajaran::whereNull('guru_id')->get();
-
-        return view('guru.mapel.pilih', compact('daftarMapel'));
+        // Jika belum punya mata pelajaran, kirimkan array kosong ke view
+        return view('guru.mapel.index', [
+            'mataPelajaranGuru' => collect([]),
+        ]);
     }
+
 
 
     public function store(Request $request)

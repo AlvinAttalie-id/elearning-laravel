@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TugasFile extends Model
 {
-    protected $fillable = ['jawaban_tugas_id', 'file_path'];
+    protected $fillable = ['tugas_id', 'file_path'];
 
     public function tugas()
     {
