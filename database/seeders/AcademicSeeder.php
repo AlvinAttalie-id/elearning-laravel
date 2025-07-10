@@ -1,5 +1,7 @@
 <?php
 
+// AcademicSeeder.php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -24,29 +26,26 @@ class AcademicSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        /* --------------------------------------------------------------
-         | 1. KELAS (3 Kelas dengan wali_kelas dari Guru)
-         * -------------------------------------------------------------*/
-        $kelasNames = ['X-1', 'XI-1', 'XII-1'];
+        // 1. Generate semua kelas: X-1..5, XI-1..5, XII-1..5 (15 kelas)
         $kelasList = collect();
-
-        // Ambil semua guru dulu, karena model tidak soft delete
+        $angkatan = ['X', 'XI', 'XII'];
         $guruList = Guru::all();
 
-        foreach ($kelasNames as $namaKelas) {
-            $wali = $guruList->random(); // Ambil dari koleksi, bukan query langsung
-            $kelasList->push(
-                Kelas::create([
-                    'nama' => $namaKelas,
-                    'wali_kelas_id' => $wali->id,
-                    'maksimal_siswa' => 40,
-                ])
-            );
+        foreach ($angkatan as $tingkat) {
+            for ($i = 1; $i <= 5; $i++) {
+                $namaKelas = "$tingkat-$i";
+                $wali = $guruList->random();
+                $kelasList->push(
+                    Kelas::create([
+                        'nama' => $namaKelas,
+                        'wali_kelas_id' => $wali->id,
+                        'maksimal_siswa' => 40,
+                    ])
+                );
+            }
         }
 
-        /* --------------------------------------------------------------
-         | 2. SISWA KE KELAS (Rotasi rata ke setiap kelas)
-         * -------------------------------------------------------------*/
+        // 2. Sebarkan 525 siswa merata ke 15 kelas
         $kelasIndex = 0;
         $kelasCount = $kelasList->count();
 
@@ -55,9 +54,7 @@ class AcademicSeeder extends Seeder
             $kelasIndex = ($kelasIndex + 1) % $kelasCount;
         });
 
-        /* --------------------------------------------------------------
-         | 3. MATA PELAJARAN (Guru acak untuk setiap mapel)
-         * -------------------------------------------------------------*/
+        // 3. Mapel & guru
         $mapelNames = [
             'Matematika',
             'Bahasa Inggris',
@@ -67,9 +64,8 @@ class AcademicSeeder extends Seeder
             'Sejarah',
             'Sosiologi',
             'Ekonomi',
-            'Geografi',
+            'Geografi'
         ];
-
         $mapelList = collect();
 
         foreach ($mapelNames as $namaMapel) {
@@ -82,19 +78,14 @@ class AcademicSeeder extends Seeder
             );
         }
 
-        /* --------------------------------------------------------------
-         | 4. KELAS <-> MAPEL (Setiap kelas dapat 2-4 mapel acak)
-         * -------------------------------------------------------------*/
+        // 4. Setiap kelas dapat 2–4 mapel
         foreach ($kelasList as $kelas) {
             $mapelKelas = $mapelList->random(rand(2, 4));
             $kelas->mataPelajaran()->sync($mapelKelas->pluck('id'));
         }
 
-        /* --------------------------------------------------------------
-         | 5. JADWAL PELAJARAN (Jam tetap, hari acak)
-         * -------------------------------------------------------------*/
+        // 5. Jadwal tetap
         $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-
         foreach ($kelasList as $kelas) {
             foreach ($kelas->mataPelajaran as $mapel) {
                 JadwalPelajaran::create([
@@ -108,9 +99,7 @@ class AcademicSeeder extends Seeder
             }
         }
 
-        /* --------------------------------------------------------------
-         | 6. TUGAS, FILE TUGAS, JAWABAN, NILAI
-         * -------------------------------------------------------------*/
+        // 6. Tugas dan jawaban siswa
         foreach ($kelasList as $kelas) {
             foreach ($kelas->mataPelajaran as $mapel) {
                 for ($i = 1; $i <= 3; $i++) {
@@ -123,13 +112,11 @@ class AcademicSeeder extends Seeder
                         'versi' => 1,
                     ]);
 
-                    // Lampirkan file PDF tugas (acak dari tugas1–5.pdf)
                     TugasFile::create([
                         'tugas_id' => $tugas->id,
                         'file_path' => 'tugas' . rand(1, 5) . '.pdf',
                     ]);
 
-                    // Setiap siswa menjawab dan dinilai
                     foreach ($kelas->siswa as $siswa) {
                         $jawaban = JawabanTugas::create([
                             'tugas_id' => $tugas->id,

@@ -1,12 +1,27 @@
 <x-app-layout>
 
     <div class="px-4 py-10 mx-auto space-y-12 max-w-7xl sm:px-6 lg:px-8">
+        <!-- Filter Jenjang -->
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-bold text-gray-800">
                 <i class="mr-2 text-blue-600 fas fa-list-ul"></i> Daftar Kelas
             </h2>
+
+            <form method="GET" class="flex items-center gap-3">
+                <label for="jenjang" class="text-sm text-gray-600">Filter Jenjang:</label>
+                <select name="jenjang" id="jenjang" onchange="this.form.submit()"
+                    class="px-3 py-2 text-sm border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Semua</option>
+                    <option value="X" {{ request('jenjang') == 'X' ? 'selected' : '' }}>X</option>
+                    <option value="XI" {{ request('jenjang') == 'XI' ? 'selected' : '' }}>XI</option>
+                    <option value="XII" {{ request('jenjang') == 'XII' ? 'selected' : '' }}>XII</option>
+                </select>
+            </form>
         </div>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8"></div>
+
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+
+        </div>
 
         <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @forelse ($kelasBelumJoin as $kelas)
@@ -74,7 +89,16 @@
                         <p><i class="mr-2 fas fa-info-circle"></i> Semua kelas telah Anda ikuti.</p>
                     </div>
                 @endforelse
+
+
             </div>
+
+            {{-- Pagination --}}
+            @if (!$filterJenjang)
+                <div class="mt-6">
+                    {{ $daftarKelas->links('pagination::tailwind') }}
+                </div>
+            @endif
         </div>
         </div>
         </div>

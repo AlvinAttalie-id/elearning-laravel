@@ -37,16 +37,17 @@ class MataPelajaranController extends Controller
         return redirect()->route('dashboard')->with('success', 'Mata pelajaran berhasil disimpan.');
     }
 
-    public function kelasList(MataPelajaran $mapel)
+    // Contoh di MataPelajaranController
+    public function kelasList(MataPelajaran $mataPelajaran)
     {
         $guru = Auth::user()->guru;
 
-        if ($mapel->guru_id !== $guru->id) {
+        if ($mataPelajaran->guru_id !== $guru->id) {
             abort(403, 'Anda tidak memiliki akses ke mata pelajaran ini.');
         }
 
-        $kelasList = $mapel->kelas;
+        $kelasList = $mataPelajaran->kelas;
 
-        return view('guru.kelas.index', compact('mapel', 'kelasList'));
+        return view('guru.kelas.index', compact('mataPelajaran', 'kelasList'));
     }
 }

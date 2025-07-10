@@ -16,7 +16,7 @@
                         </h3>
 
                         <span class="inline-block px-3 py-1 text-xs font-semibold text-white bg-indigo-600 rounded-full">
-                            ID: {{ $mapel->id }}
+                            ID: {{ $mapel->slug }}
                         </span>
                     </div>
 
@@ -25,7 +25,7 @@
                     </p>
 
                     <div class="flex justify-end mt-4">
-                        <a href="{{ route('guru.mapel.kelas', $mapel->id) }}"
+                        <a href="{{ route('guru.mapel.kelas', $mapel->slug) }}"
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-indigo-600 rounded-full shadow hover:bg-indigo-700 hover:shadow-md">
                             <i class="fas fa-chalkboard"></i>
                             Pilih Kelas

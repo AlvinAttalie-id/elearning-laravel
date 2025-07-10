@@ -36,7 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    // ================= Murid =================
+    // Murid
     Route::middleware(RoleMiddleware::class . ':Murid')->group(function () {
 
         // Kelas
@@ -72,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         )->name('tugas.show');
     });
 
-    // ================= Guru =================
+    // Guru
     Route::middleware(RoleMiddleware::class . ':Guru')->group(function () {
         Route::prefix('guru')->group(function () {
 
@@ -81,12 +81,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/pilih-mapel', [MataPelajaranController::class, 'store'])->name('guru.simpan-mapel');
 
             // Daftar Kelas berdasarkan Mapel
-            Route::get('/mapel/{mapel:slug}/kelas', [MataPelajaranController::class, 'kelasList'])->name('guru.mapel.kelas');
+            Route::get('/mapel/{mataPelajaran:slug}/kelas', [MataPelajaranController::class, 'kelasList'])->name('guru.mapel.kelas');
 
             // Tugas Guru
-            Route::get('/mapel/{mapel:slug}/kelas/{kelas:slug}/tugas/create', [TugasController::class, 'create'])->name('guru.tugas.create');
-            Route::post('/mapel/{mapel:slug}/kelas/{kelas:slug}/tugas', [TugasController::class, 'store'])->name('guru.tugas.store');
-            Route::get('/mapel/{mapel:slug}/kelas/{kelas:slug}/tugas/{tugas:slug}', [TugasController::class, 'detail'])->name('guru.tugas.detail');
+            Route::get('/mapel/{mataPelajaran:slug}/kelas/{kelas:slug}/tugas/create', [TugasController::class, 'create'])->name('guru.tugas.create');
+            Route::post('/mapel/{mataPelajaran:slug}/kelas/{kelas:slug}/tugas', [TugasController::class, 'store'])->name('guru.tugas.store');
+            Route::get('/mapel/{mataPelajaran:slug}/kelas/{kelas:slug}/tugas/{tugas:slug}', [TugasController::class, 'detail'])->name('guru.tugas.detail');
 
             // Penilaian
             Route::post('/jawaban/{jawaban}/nilai', [TugasController::class, 'beriNilai'])->name('guru.tugas.nilai');

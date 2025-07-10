@@ -8,22 +8,30 @@ use Illuminate\Http\Request;
 
 class KelasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        $filterJenjang = $request->query('jenjang'); // Tangkap filter dari query string (?jenjang=X)
 
-        $daftarKelas = Kelas::withCount('siswa')
-            ->with(['waliKelas.user', 'mataPelajaran'])
-            ->get();
+        $query = Kelas::withCount('siswa')
+            ->with(['waliKelas.user', 'mataPelajaran']);
+
+        if ($filterJenjang) {
+            $query->where('nama', 'like', "{$filterJenjang}-%"); // Contoh: X-1, XI-2, dll
+        }
+
+        $daftarKelas = $query->orderBy('nama')->paginate(5)->withQueryString(); // pagination 5 data
 
         $kelasSaya = $user->siswa->kelas_id ?? null;
 
-        $kelasBelumJoin = $daftarKelas->reject(function ($kelas) use ($user) {
-            return $kelas->siswa->contains('user_id', $user->id);
+        // Hanya ambil kelas yang belum diikuti user
+        $kelasBelumJoin = $daftarKelas->filter(function ($kelas) use ($user) {
+            return !$kelas->siswa->contains('user_id', $user->id);
         });
 
-        return view('kelas.index', compact('kelasBelumJoin', 'kelasSaya'));
+        return view('kelas.index', compact('kelasBelumJoin', 'kelasSaya', 'filterJenjang', 'daftarKelas'));
     }
+
 
     public function show(Kelas $kelas)
     {

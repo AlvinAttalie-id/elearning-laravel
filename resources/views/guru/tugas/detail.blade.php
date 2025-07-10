@@ -15,7 +15,8 @@
 
             {{-- Info Tugas --}}
             <div class="p-6 bg-white border border-gray-200 shadow-sm rounded-xl">
-                <p class="mb-2 text-sm text-gray-600"><strong>Mata Pelajaran:</strong> {{ $tugas->mapel->nama_mapel }}
+                <p class="mb-2 text-sm text-gray-600"><strong>Mata Pelajaran:</strong>
+                    {{ $tugas->mataPelajaran->nama_mapel }}
                 </p>
                 <p class="mb-2 text-sm text-gray-600"><strong>Kelas:</strong> {{ $tugas->kelas->nama }}</p>
                 <p class="mb-2 text-sm text-gray-600"><strong>Deskripsi:</strong> {{ $tugas->deskripsi ?? '-' }}</p>

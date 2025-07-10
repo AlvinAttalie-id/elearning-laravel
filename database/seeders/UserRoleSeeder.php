@@ -44,8 +44,8 @@ class UserRoleSeeder extends Seeder
             ]);
         }
 
-        // MURID (>120)
-        for ($i = 1; $i <= 125; $i++) {
+        // MURID (525 total)
+        for ($i = 1; $i <= 525; $i++) {
             $user = User::create([
                 'name' => $faker->name,
                 'email' => "murid{$i}@example.com",
@@ -58,7 +58,7 @@ class UserRoleSeeder extends Seeder
                 'nis' => 'NIS' . str_pad($i, 4, '0', STR_PAD_LEFT),
                 'tanggal_lahir' => $faker->date('Y-m-d', '-10 years'),
                 'alamat' => $faker->address,
-                'kelas_id' => null,
+                'kelas_id' => null, // Akan diisi di AcademicSeeder
             ]);
         }
     }

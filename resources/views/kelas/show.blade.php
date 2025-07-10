@@ -46,11 +46,23 @@
                 <i class="fas fa-check-circle"></i>
                 Anda Sudah Bergabung
             </button>
+        @elseif ($sudahJoinKelasLain && $kelasPenuh)
+            <button type="button" disabled
+                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-red-400 rounded-full shadow-lg cursor-not-allowed bottom-8 right-8">
+                <i class="fas fa-ban"></i>
+                Sudah Gabung Kelas Lain & Kelas Ini Penuh
+            </button>
         @elseif ($sudahJoinKelasLain)
             <button type="button" disabled
                 class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-gray-400 rounded-full shadow-lg cursor-not-allowed bottom-8 right-8">
                 <i class="fas fa-ban"></i>
                 Sudah Bergabung di Kelas Lain
+            </button>
+        @elseif ($kelasPenuh)
+            <button type="button" disabled
+                class="fixed z-50 flex items-center gap-2 px-5 py-3 text-sm font-semibold text-white bg-red-500 rounded-full shadow-lg cursor-not-allowed bottom-8 right-8">
+                <i class="fas fa-users-slash"></i>
+                Kelas Sudah Penuh
             </button>
         @else
             <button type="button" @click="showModal = true"
@@ -59,6 +71,7 @@
                 Join Kelas
             </button>
         @endif
+
 
         {{-- Tombol Floating Kembali --}}
         <div class="fixed z-50 bottom-8 left-8">
@@ -70,7 +83,7 @@
         </div>
 
         {{-- Modal Join --}}
-        @if (!$sudahJoinKelasLain && !$sudahJoinKelasIni)
+        @if (!$sudahJoinKelasIni && !$sudahJoinKelasLain && !$kelasPenuh)
             <div x-show="showModal" x-transition
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                 <div @click.away="showModal = false" class="w-full max-w-md p-6 bg-white shadow-lg rounded-xl">
@@ -85,7 +98,7 @@
                             class="px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600">
                             Batal
                         </button>
-                        <form action="{{ route('kelas.join', $kelas->id) }}" method="POST">
+                        <form action="{{ route('kelas.join', $kelas->slug) }}" method="POST">
                             @csrf
                             <button type="submit"
                                 class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
@@ -96,5 +109,6 @@
                 </div>
             </div>
         @endif
+
     </div>
 </x-app-layout>

@@ -65,10 +65,10 @@
                             'tugas' => $t->slug,
                         ]) }}"
                             class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
-                            Jawab Tugas
+                            <i data-lucide="{{ $jawaban ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700' }}"
+                                class="w-4 h-4 mr-2"></i>
+                            {{ $jawaban ? 'Lihat Tugas' : 'Jawab Tugas' }}
                         </a>
-
                     </div>
                 </div>
             @empty

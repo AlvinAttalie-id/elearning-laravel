@@ -127,10 +127,10 @@ class TugasController extends Controller
         ]);
     }
 
-    // ====================== GURU SECTION ======================
-
+    // Guru Section
     public function create(MataPelajaran $mataPelajaran, Kelas $kelas)
     {
+
         $tugasList = Tugas::where('mapel_id', $mataPelajaran->id)
             ->where('kelas_id', $kelas->id)
             ->latest()->get();
@@ -189,7 +189,7 @@ class TugasController extends Controller
 
     public function detail(MataPelajaran $mataPelajaran, Kelas $kelas, Tugas $tugas)
     {
-        $tugas->load(['mapel', 'kelas', 'jawaban.nilai']);
+        $tugas->load(['mataPelajaran', 'kelas', 'jawaban.nilai']);
 
         $siswaList = Siswa::with('user')
             ->where('kelas_id', $kelas->id)

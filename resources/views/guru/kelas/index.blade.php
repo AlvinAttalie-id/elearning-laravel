@@ -2,7 +2,7 @@
     <div class="px-4 py-10 mx-auto space-y-10 max-w-7xl sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-bold text-gray-800">
-                <i class="mr-2 text-indigo-600 fas fa-chalkboard"></i> Kelas untuk: {{ $mapel->nama_mapel }}
+                <i class="mr-2 text-indigo-600 fas fa-chalkboard"></i> Kelas untuk: {{ $mataPelajaran->nama_mapel }}
             </h2>
         </div>
 
@@ -24,7 +24,7 @@
                     </p>
 
                     <div class="flex justify-end mt-4">
-                        <a href="{{ route('guru.tugas.create', ['mapel' => $mapel->id, 'kelas' => $kelas->id]) }}"
+                        <a href="{{ route('guru.tugas.create', ['mataPelajaran' => $mataPelajaran->slug, 'kelas' => $kelas->slug]) }}"
                             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-full shadow hover:bg-indigo-700">
                             <i class="fas fa-plus-circle"></i>
                             Buat Tugas

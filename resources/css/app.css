@@ -27,3 +27,20 @@
 .animate-slide-right {
     animation: slide-right 50s linear infinite;
 }
+
+/* komentar CSS */
+.pagination {
+    @apply flex justify-center mt-6 space-x-2;
+}
+
+.pagination .page-link {
+    @apply px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition;
+}
+
+.pagination .page-item.active .page-link {
+    @apply bg-blue-600 text-white border-blue-600;
+}
+
+.pagination .page-item.disabled .page-link {
+    @apply bg-gray-100 text-gray-400 cursor-not-allowed;
+}

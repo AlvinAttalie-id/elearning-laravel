@@ -2,7 +2,7 @@
     <div class="max-w-4xl px-4 py-10 mx-auto space-y-8 sm:px-6 lg:px-8" x-data="{ showModal: false }">
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-bold text-gray-800">
-                <i class="mr-2 text-blue-600 fas fa-tasks"></i> Tugas untuk {{ $mapel->nama_mapel }} -
+                <i class="mr-2 text-blue-600 fas fa-tasks"></i> Tugas untuk {{ $mataPelajaran->nama_mapel }} -
                 {{ $kelas->nama }}
             </h2>
             <button @click="showModal = true"
@@ -29,7 +29,7 @@
                     </button>
                 </div>
 
-                <form action="{{ route('guru.tugas.store', [$mapel->id, $kelas->id]) }}" method="POST"
+                <form action="{{ route('guru.tugas.store', [$mataPelajaran->slug, $kelas->slug]) }}" method="POST"
                     enctype="multipart/form-data" class="space-y-4">
                     @csrf
 
@@ -89,7 +89,7 @@
             </h3>
 
             @forelse ($tugasList as $tugas)
-                <a href="{{ route('guru.tugas.detail', ['mapel' => $mapel->id, 'kelas' => $kelas->id, 'tugas' => $tugas->id]) }}"
+                <a href="{{ route('guru.tugas.detail', ['mataPelajaran' => $mataPelajaran->slug, 'kelas' => $kelas->slug, 'tugas' => $tugas->slug]) }}"
                     class="block p-4 transition duration-200 bg-white border rounded shadow hover:shadow-md hover:border-blue-500 group">
                     <div class="flex items-center justify-between">
                         <h4 class="text-lg font-semibold text-gray-700 group-hover:text-blue-600">{{ $tugas->judul }}
