@@ -16,8 +16,12 @@ return new class extends Migration
             $table->foreignId('mapel_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->foreignId('kelas_id')->constrained('kelas')->onDelete('cascade');
             $table->string('judul');
+            $table->string('slug')->unique();
             $table->text('deskripsi');
+            $table->string('link_video')->nullable();
             $table->date('tanggal_deadline');
+            $table->integer('versi')->default(1);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

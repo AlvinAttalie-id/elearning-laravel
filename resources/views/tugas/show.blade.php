@@ -114,7 +114,7 @@
                 </div>
             @else
                 {{-- Form Jawaban --}}
-                <form method="POST" action="{{ route('tugas.jawab', $tugas->id) }}" enctype="multipart/form-data"
+                <form method="POST" action="{{ route('tugas.jawab', $tugas->slug) }}" enctype="multipart/form-data"
                     class="space-y-6">
                     @csrf
 
@@ -157,7 +157,10 @@
 
     {{-- Floating Kembali --}}
     <div class="fixed z-40 bottom-8 left-8">
-        <a href="{{ route('tugas.kelas-mapel', ['kelas' => $tugas->kelas_id, 'mapel' => $tugas->mapel_id]) }}"
+        <a href="{{ route('tugas.kelas-mapel', [
+            'kelas' => $tugas->kelas->slug,
+            'mataPelajaran' => $tugas->mataPelajaran->slug,
+        ]) }}"
             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Kembali
         </a>

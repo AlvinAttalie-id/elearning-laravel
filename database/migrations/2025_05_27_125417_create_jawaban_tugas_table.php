@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('tugas_id')->constrained('tugas')->cascadeOnDelete();
-            $table->foreignId('siswa_id')->constrained('users');   // atau table `siswa`
+            $table->foreignId('siswa_id')->constrained('users');
             $table->text('jawaban')->nullable();
             $table->string('file_path')->nullable();
             $table->timestamp('submitted_at');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

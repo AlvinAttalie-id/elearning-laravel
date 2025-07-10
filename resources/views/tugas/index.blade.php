@@ -6,7 +6,7 @@
                 <i data-lucide="clipboard-list" class="w-5 h-5 text-indigo-600"></i>
             </div>
             <h2 class="text-2xl font-bold text-gray-900">
-                Tugas - {{ $mapel->nama_mapel }} ({{ $kelas->nama }})
+                Tugas - {{ $mataPelajaran->nama_mapel }} ({{ $kelas->nama }})
             </h2>
         </div>
 
@@ -59,11 +59,16 @@
                     </div>
 
                     <div class="mt-6">
-                        <a href="{{ route('tugas.show', [$kelas->id, $mapel->id, $t->id]) }}"
+                        <a href="{{ route('tugas.show', [
+                            'mataPelajaran' => $mataPelajaran->slug,
+                            'kelas' => $kelas->slug,
+                            'tugas' => $t->slug,
+                        ]) }}"
                             class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
                             Jawab Tugas
                         </a>
+
                     </div>
                 </div>
             @empty
@@ -77,7 +82,7 @@
 
     <!-- Tombol Kembali -->
     <div class="fixed z-40 bottom-6 left-6">
-        <a href="{{ route('kelas.show-saya', $kelas->id) }}"
+        <a href="{{ route('kelas.show-saya', $kelas->slug) }}"
             class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
             <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
             Kembali

@@ -1,8 +1,6 @@
 <x-app-layout>
-
     <div class="px-4 py-12 mx-auto space-y-8 max-w-7xl sm:px-6 lg:px-8" x-data="{ showKeluarModal: false }">
-
-        <!-- Header + Notifikasi -->
+        <!-- Header -->
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="flex items-center justify-center w-10 h-10 bg-indigo-100 rounded-full">
@@ -13,7 +11,6 @@
                 </h2>
             </div>
 
-            <!-- Bell -->
             <a href="{{ route('tugas.belum') }}" class="relative group">
                 <i data-lucide="bell" class="w-6 h-6 text-gray-600 transition group-hover:text-indigo-600"></i>
                 @if ($totalTugasBelum > 0)
@@ -25,11 +22,23 @@
             </a>
         </div>
 
-        <!-- Informasi Kelas -->
+        <!-- Info Kelas -->
         <div class="p-6 bg-white border border-gray-200 shadow rounded-2xl">
             <h3 class="mb-4 text-lg font-semibold text-gray-800">Informasi Kelas</h3>
             <p class="mb-2 text-gray-700"><strong>Wali Kelas:</strong> {{ $kelas->waliKelas->user->name ?? '-' }}</p>
-            <p class="mb-2 text-gray-700"><strong>Jumlah Siswa:</strong> {{ $kelas->siswa->count() }}</p>
+            <p class="mb-2 text-gray-700">
+                <strong>Jumlah Siswa:</strong>
+                <span
+                    class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">
+                    {{ $kelas->siswa_count ?? $kelas->siswa->count() }} / {{ $kelas->maksimal_siswa }} siswa
+                </span>
+                @if (($kelas->siswa_count ?? $kelas->siswa->count()) >= $kelas->maksimal_siswa)
+                    <span
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 ml-2 text-xs font-semibold text-white bg-red-600 rounded-full">
+                        <i data-lucide="lock" class="w-3 h-3"></i> Penuh
+                    </span>
+                @endif
+            </p>
             <p class="text-gray-700">
                 <strong>Total Mata Pelajaran:</strong>
                 <span
@@ -39,7 +48,7 @@
             </p>
         </div>
 
-        <!-- Daftar Mata Pelajaran -->
+        <!-- Daftar Mapel -->
         <div class="space-y-4">
             <h4 class="text-lg font-semibold text-gray-800">Mata Pelajaran</h4>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +59,6 @@
                             <div class="flex items-start justify-between mb-3">
                                 <h5 class="text-lg font-semibold text-gray-800">{{ $mapel->nama }}</h5>
 
-                                {{-- Notifikasi per mapel --}}
                                 @if ($mapel->jumlah_tugas_belum > 0)
                                     <div class="relative">
                                         <span
@@ -67,11 +75,11 @@
 
                             <p class="mb-4 text-sm text-gray-600">
                                 <i data-lucide="user" class="inline w-4 h-4 mr-1 text-gray-500"></i>
-                                {{ $mapel->guru }}
+                                {{ $mapel->guru_name }}
                             </p>
                         </div>
 
-                        <a href="{{ route('tugas.kelas-mapel', ['kelas' => $kelas->id, 'mapel' => $mapel->id]) }}"
+                        <a href="{{ route('tugas.kelas-mapel', ['kelas' => $kelas->slug, 'mataPelajaran' => $mapel->slug]) }}"
                             class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700">
                             Masuk
                             <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
@@ -85,7 +93,7 @@
             </div>
         </div>
 
-        <!-- Tombol Floating Keluar -->
+        <!-- Tombol Floating -->
         <div class="fixed z-50 bottom-6 right-6">
             <button @click="showKeluarModal = true"
                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition bg-red-600 rounded-full shadow-lg hover:bg-red-700">
@@ -94,7 +102,6 @@
             </button>
         </div>
 
-        <!-- Tombol Floating Kembali -->
         <div class="fixed z-50 bottom-6 left-6">
             <a href="{{ route('kelas.saya') }}"
                 class="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition bg-blue-700 rounded-full shadow-lg hover:bg-gray-800">
@@ -103,22 +110,20 @@
             </a>
         </div>
 
-        <!-- Modal Konfirmasi Keluar -->
+        <!-- Modal Keluar -->
         <div x-show="showKeluarModal" x-transition x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-
             <div @click.away="showKeluarModal = false" class="w-full max-w-md p-6 bg-white shadow-lg rounded-xl">
                 <h2 class="mb-4 text-lg font-semibold text-gray-800">Konfirmasi Keluar Kelas</h2>
                 <p class="mb-6 text-sm text-gray-600">
-                    Apakah Anda yakin ingin keluar dari kelas
-                    <strong>{{ $kelas->nama }}</strong>?
+                    Apakah Anda yakin ingin keluar dari kelas <strong>{{ $kelas->nama }}</strong>?
                 </p>
                 <div class="flex justify-end gap-3">
                     <button @click="showKeluarModal = false"
                         class="px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-lg hover:bg-gray-600">
                         Batal
                     </button>
-                    <form action="{{ route('kelas.keluar', $kelas->id) }}" method="POST">
+                    <form action="{{ route('kelas.keluar', $kelas->slug) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit"

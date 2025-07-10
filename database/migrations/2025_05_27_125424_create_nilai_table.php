@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained('siswa')->onDelete('cascade');
             $table->foreignId('mapel_id')->constrained('mata_pelajaran')->onDelete('cascade');
             $table->integer('nilai');
+            $table->foreignId('tugas_id')->nullable()->constrained('tugas')->onDelete('cascade');
+            $table->foreignId('jawaban_tugas_id')->nullable()->constrained('jawaban_tugas')->onDelete('cascade');
+            $table->text('feedback')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

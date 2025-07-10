@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('tanggal');
             $table->enum('status', ['hadir', 'izin', 'absen']);
             $table->text('keterangan')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

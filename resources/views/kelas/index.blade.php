@@ -22,9 +22,12 @@
                             {{ $kelas->nama }}
                         </h3>
 
-                        <span class="inline-block px-3 py-1 text-xs font-semibold text-white bg-green-600 rounded-full">
-                            {{ $kelas->siswa->count() }} Murid
+                        <span
+                            class="inline-block px-3 py-1 text-xs font-semibold text-white
+    {{ $kelas->siswa_count >= $kelas->maksimal_siswa ? 'bg-red-600' : 'bg-green-600' }} rounded-full">
+                            {{ $kelas->siswa_count }} / {{ $kelas->maksimal_siswa }} Murid
                         </span>
+
                     </div>
 
                     <p class="mb-1 text-sm text-gray-600">
@@ -44,7 +47,13 @@
                     </p>
 
                     <div class="flex justify-end mt-4">
-                        @if ($kelasSaya && $kelasSaya != $kelas->id)
+                        @if ($kelas->siswa_count >= $kelas->maksimal_siswa)
+                            <button disabled
+                                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gray-400 rounded-full shadow cursor-not-allowed">
+                                <i class="fas fa-lock"></i>
+                                Kelas Penuh
+                            </button>
+                        @elseif ($kelasSaya && $kelasSaya != $kelas->id)
                             <button disabled
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-gray-400 rounded-full shadow cursor-not-allowed">
                                 <i class="fas fa-ban"></i>
@@ -57,6 +66,7 @@
                                 Lihat Detail
                             </a>
                         @endif
+
                     </div>
                 </div>
                 @empty

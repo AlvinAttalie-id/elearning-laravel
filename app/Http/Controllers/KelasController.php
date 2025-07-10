@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Kelas;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\MataPelajaran;
 
 class KelasController extends Controller
 {
@@ -13,13 +12,12 @@ class KelasController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil semua kelas
-        $daftarKelas = Kelas::with(['waliKelas.user', 'mataPelajaran', 'siswa'])->get();
+        $daftarKelas = Kelas::withCount('siswa')
+            ->with(['waliKelas.user', 'mataPelajaran'])
+            ->get();
 
-        // Ambil kelas yang sedang diikuti user (jika user adalah murid)
         $kelasSaya = $user->siswa->kelas_id ?? null;
 
-        // Filter hanya kelas yang belum diikuti (opsional, jika kamu tetap ingin)
         $kelasBelumJoin = $daftarKelas->reject(function ($kelas) use ($user) {
             return $kelas->siswa->contains('user_id', $user->id);
         });
@@ -27,105 +25,51 @@ class KelasController extends Controller
         return view('kelas.index', compact('kelasBelumJoin', 'kelasSaya'));
     }
 
-    public function show($id)
+    public function show(Kelas $kelas)
     {
         $user = Auth::user();
-        $kelas = Kelas::with(['waliKelas.user', 'mataPelajaran', 'siswa'])->findOrFail($id);
+
+        $kelas->loadCount('siswa')
+            ->load(['waliKelas.user', 'mataPelajaran']);
 
         $siswa = $user->siswa;
         $kelasSayaId = $siswa?->kelas_id;
+
+        $kelasPenuh = $kelas->siswa_count >= $kelas->maksimal_siswa;
 
         return view('kelas.show', [
             'kelas' => $kelas,
             'sudahJoinKelasLain' => $kelasSayaId && $kelasSayaId != $kelas->id,
             'sudahJoinKelasIni' => $kelasSayaId == $kelas->id,
+            'kelasPenuh' => $kelasPenuh,
         ]);
     }
 
-    public function join($id, Request $request)
+    public function join(Kelas $kelas, Request $request)
     {
         $user = Auth::user();
-
-        // Pastikan user memiliki data siswa
         $siswa = $user->siswa;
 
         if (!$siswa) {
             return redirect()->back()->with('error', 'Akun Anda belum terdaftar sebagai siswa.');
         }
 
-        // Update kelas_id pada siswa
-        $siswa->kelas_id = $id;
+        if ($kelas->siswa()->count() >= $kelas->maksimal_siswa) {
+            return redirect()->back()->with('error', 'Kelas ini sudah penuh.');
+        }
+
+        $siswa->kelas_id = $kelas->id;
         $siswa->save();
 
-        return redirect()->route('kelas.show', $id)->with('success', 'Berhasil bergabung ke kelas.');
+        return redirect()->route('kelas.show', $kelas)->with('success', 'Berhasil bergabung ke kelas.');
     }
 
-    public function showSaya($id)
+    public function keluar(Kelas $kelas)
     {
-        $user   = Auth::user();
-        $siswa  = $user->siswa;
-
-        $kelas = Kelas::with([
-            'waliKelas.user',
-            'mataPelajaran.guru.user',
-            'mataPelajaran.tugas.jawaban',
-        ])->findOrFail($id);
+        $user = Auth::user();
+        $siswa = $user->siswa;
 
         if (!$siswa || $siswa->kelas_id != $kelas->id) {
-            abort(403, 'Anda tidak memiliki akses ke kelas ini.');
-        }
-
-        $totalTugasBelum = 0;
-
-        $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa, &$totalTugasBelum) {
-            $jumlahTugasBelum = $mapel->tugas->filter(function ($tugas) use ($siswa) {
-                return $tugas->jawaban->where('siswa_id', $siswa->id)->isEmpty();
-            })->count();
-
-            $totalTugasBelum += $jumlahTugasBelum;
-
-            return (object) [
-                'id'                  => $mapel->id,
-                'nama'                => $mapel->nama_mapel,
-                'guru'                => $mapel->guru?->user?->name ?? '-',
-                'jumlah_tugas'        => $mapel->tugas->count(),
-                'jumlah_tugas_belum'  => $jumlahTugasBelum,
-            ];
-        });
-
-        return view('kelas.show-saya', [
-            'kelas'            => $kelas,
-            'mapelList'        => $mapelList,
-            'totalTugasBelum'  => $totalTugasBelum,
-        ]);
-    }
-
-    public function indexKelasSaya()
-    {
-        $user = Auth::user();
-        $siswa = $user->siswa;
-
-        // Validasi jika user bukan siswa
-        if (! $siswa) {
-            abort(403, 'Akses hanya untuk siswa.');
-        }
-
-        // Ambil kelas yang diikuti oleh siswa (jika sudah punya kelas)
-        $kelasSaya = $siswa->kelas()->with([
-            'waliKelas.user',
-            'mataPelajaran.tugas' // Eager load tugas agar tidak N+1
-        ])->get();
-
-        return view('kelas.index-saya', compact('kelasSaya'));
-    }
-
-
-    public function keluar($id)
-    {
-        $user = Auth::user();
-        $siswa = $user->siswa;
-
-        if (!$siswa || $siswa->kelas_id != $id) {
             return redirect()->back()->with('error', 'Anda tidak tergabung di kelas ini.');
         }
 
@@ -133,5 +77,66 @@ class KelasController extends Controller
         $siswa->save();
 
         return redirect()->route('kelas.saya')->with('success', 'Anda telah keluar dari kelas.');
+    }
+
+    public function indexKelasSaya()
+    {
+        $user = Auth::user();
+        $siswa = $user->siswa;
+
+        if (!$siswa) {
+            abort(403, 'Akses hanya untuk siswa.');
+        }
+
+        $kelasSaya = $siswa->kelas()->with([
+            'waliKelas.user',
+            'mataPelajaran.tugas'
+        ])->get();
+
+        return view('kelas.index-saya', compact('kelasSaya'));
+    }
+
+    public function showSaya(Kelas $kelas)
+    {
+        $user = Auth::user();
+        $siswa = $user->siswa;
+
+        // Validasi akses
+        if (!$siswa || $siswa->kelas_id != $kelas->id) {
+            abort(403, 'Anda tidak memiliki akses ke kelas ini.');
+        }
+
+        $kelas->loadCount('siswa')
+            ->load([
+                'waliKelas.user',
+                'mataPelajaran.guru.user',
+                'mataPelajaran.tugas.jawaban',
+            ]);
+
+        $totalTugasBelum = 0;
+
+        // Format data mapel
+        $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa, &$totalTugasBelum) {
+            $jumlahTugasBelum = $mapel->tugas->filter(function ($tugas) use ($siswa) {
+                return $tugas->jawaban->where('siswa_id', $siswa->id)->isEmpty();
+            })->count();
+
+            $totalTugasBelum += $jumlahTugasBelum;
+
+            return (object)[
+                'id' => $mapel->id,
+                'slug' => $mapel->slug,
+                'nama' => $mapel->nama_mapel,
+                'guru_name' => $mapel->guru?->user?->name ?? '-',
+                'jumlah_tugas' => $mapel->tugas->count(),
+                'jumlah_tugas_belum' => $jumlahTugasBelum,
+            ];
+        });
+
+        return view('kelas.show-saya', [
+            'kelas' => $kelas,
+            'mapelList' => $mapelList,
+            'totalTugasBelum' => $totalTugasBelum,
+        ]);
     }
 }

@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('kelas', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('slug')->unique();
             $table->foreignId('wali_kelas_id')->constrained('guru')->onDelete('cascade');
+            $table->unsignedInteger('maksimal_siswa')->default(30);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

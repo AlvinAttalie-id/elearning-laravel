@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('mata_pelajaran', function (Blueprint $table) {
             $table->id();
             $table->string('nama_mapel');
+            $table->string('slug')->unique();
             $table->foreignId('guru_id')->constrained('guru')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -8,57 +8,58 @@ use App\Models\Siswa;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Faker\Factory as Faker;
 
 class UserRoleSeeder extends Seeder
 {
     public function run(): void
     {
+        $faker = Faker::create();
+
         // Buat role jika belum ada
         $adminRole = Role::firstOrCreate(['name' => 'Admin']);
         $guruRole = Role::firstOrCreate(['name' => 'Guru']);
         $muridRole = Role::firstOrCreate(['name' => 'Murid']);
 
-        // Buat 5 user guru beserta data di tabel guru
-        for ($i = 1; $i <= 5; $i++) {
-            $guruUser = User::create([
-                'name' => "Guru {$i}",
-                'email' => "guru{$i}@example.com",
-                'password' => Hash::make('password'),
-            ]);
-            $guruUser->assignRole($guruRole);
-
-            // Buat data guru terkait, tanpa kolom 'nama' karena ambil dari user
-            Guru::create([
-                'user_id' => $guruUser->id,
-                'nip' => 'NIP' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'no_hp' => '08123456789' . $i,
-            ]);
-        }
-
-        // Buat 5 user murid beserta data di tabel siswa
-        for ($i = 1; $i <= 5; $i++) {
-            $muridUser = User::create([
-                'name' => "Murid {$i}",
-                'email' => "murid{$i}@example.com",
-                'password' => Hash::make('password'),
-            ]);
-            $muridUser->assignRole($muridRole);
-
-            // Buat data siswa terkait, kelas_id dikosongkan (null)
-            Siswa::create([
-                'user_id' => $muridUser->id,
-                'nis' => 'NIS' . str_pad($i, 4, '0', STR_PAD_LEFT),
-                'tanggal_lahir' => now()->subYears(10 + $i), // contoh tanggal lahir
-                'alamat' => "Alamat Murid {$i}",
-                'kelas_id' => null, // Kelas dikosongkan supaya tidak error FK
-            ]);
-        }
-
-        // Tambah 1 Admin
+        // ADMIN
         User::create([
             'name' => 'Super Admin',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
         ])->assignRole($adminRole);
+
+        // GURU
+        for ($i = 1; $i <= 10; $i++) {
+            $user = User::create([
+                'name' => $faker->name,
+                'email' => "guru{$i}@example.com",
+                'password' => Hash::make('password'),
+            ]);
+            $user->assignRole($guruRole);
+
+            Guru::create([
+                'user_id' => $user->id,
+                'nip' => 'NIP' . str_pad($i, 4, '0', STR_PAD_LEFT),
+                'no_hp' => $faker->phoneNumber,
+            ]);
+        }
+
+        // MURID (>120)
+        for ($i = 1; $i <= 125; $i++) {
+            $user = User::create([
+                'name' => $faker->name,
+                'email' => "murid{$i}@example.com",
+                'password' => Hash::make('password'),
+            ]);
+            $user->assignRole($muridRole);
+
+            Siswa::create([
+                'user_id' => $user->id,
+                'nis' => 'NIS' . str_pad($i, 4, '0', STR_PAD_LEFT),
+                'tanggal_lahir' => $faker->date('Y-m-d', '-10 years'),
+                'alamat' => $faker->address,
+                'kelas_id' => null,
+            ]);
+        }
     }
 }

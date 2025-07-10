@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,18 +16,10 @@ class MataPelajaranController extends Controller
             return redirect()->route('dashboard')->with('error', 'Akun Anda belum terdaftar sebagai guru.');
         }
 
-        if ($guru->mataPelajaran()->exists()) {
-            $mataPelajaranGuru = $guru->mataPelajaran;
-            return view('guru.mapel.index', compact('mataPelajaranGuru'));
-        }
+        $mataPelajaranGuru = $guru->mataPelajaran ?? collect();
 
-        // Jika belum punya mata pelajaran, kirimkan array kosong ke view
-        return view('guru.mapel.index', [
-            'mataPelajaranGuru' => collect([]),
-        ]);
+        return view('guru.mapel.index', compact('mataPelajaranGuru'));
     }
-
-
 
     public function store(Request $request)
     {
@@ -46,11 +37,13 @@ class MataPelajaranController extends Controller
         return redirect()->route('dashboard')->with('success', 'Mata pelajaran berhasil disimpan.');
     }
 
-    public function kelasList($mapelId)
+    public function kelasList(MataPelajaran $mapel)
     {
         $guru = Auth::user()->guru;
 
-        $mapel = MataPelajaran::with('kelas')->where('id', $mapelId)->where('guru_id', $guru->id)->firstOrFail();
+        if ($mapel->guru_id !== $guru->id) {
+            abort(403, 'Anda tidak memiliki akses ke mata pelajaran ini.');
+        }
 
         $kelasList = $mapel->kelas;
 
