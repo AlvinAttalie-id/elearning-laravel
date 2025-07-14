@@ -32,6 +32,25 @@
             </a>
         @endrole
 
+        @role('Guru')
+            <a href="{{ route('guru.pilih-mapel') }}"
+                class="flex flex-col items-center flex-1 py-2 text-xs {{ request()->routeIs('guru.pilih-mapel') ? 'text-indigo-600' : 'text-gray-500' }}">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18M3 12h18M3 19h18" />
+                </svg>
+                Mata Pelajaran
+            </a>
+            <a href="{{ route('guru.kelas.wali-kelas') }}"
+                class="flex flex-col items-center flex-1 py-2 text-xs {{ request()->routeIs('guru.kelas.wali-kelas') ? 'text-indigo-600' : 'text-gray-500' }}">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9.75 17L8 21h8l-1.75-4M6 3h12M6 3v12m12-12v12M6 15h12" />
+                </svg>
+                Wali Kelas
+            </a>
+        @endrole
+
+
         {{-- Profil --}}
         <a href="{{ route('profile.edit') }}"
             class="flex flex-col items-center flex-1 py-2 text-xs {{ request()->routeIs('profile.edit') ? 'text-indigo-600' : 'text-gray-500' }}">

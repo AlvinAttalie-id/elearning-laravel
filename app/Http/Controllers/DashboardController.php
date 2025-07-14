@@ -13,21 +13,19 @@ class DashboardController extends Controller
         $user = Auth::user();
         $kelasSaya = collect();
         $tugasBelumDikerjakan = collect();
+        $kelasWali = null; // Tambahan ini
 
-        if ($user->hasRole('Murid') && $user->relationLoaded('siswa')
-            ? $user->siswa : $user->load('siswa')->siswa
-        ) {
+        // Jika murid
+        if ($user->hasRole('Murid') && $user->relationLoaded('siswa') ? $user->siswa : $user->load('siswa')->siswa) {
             $siswa = $user->siswa;
 
             if ($siswa && $siswa->kelas_id) {
-                // Kelas yang diikuti siswa
                 $kelasSaya = Kelas::with(['waliKelas.user', 'siswa'])
                     ->where('id', $siswa->kelas_id)
                     ->get();
 
-                // Tugas belum dikerjakan oleh siswa
                 $tugasBelumDikerjakan = Tugas::where('kelas_id', $siswa->kelas_id)
-                    ->with(['mataPelajaran', 'kelas']) // relasi benar
+                    ->with(['mataPelajaran', 'kelas'])
                     ->whereDoesntHave('jawaban', function ($q) use ($siswa) {
                         $q->where('siswa_id', $siswa->id);
                     })
@@ -36,6 +34,13 @@ class DashboardController extends Controller
             }
         }
 
-        return view('dashboard', compact('kelasSaya', 'tugasBelumDikerjakan'));
+        // Jika guru dan merupakan wali kelas
+        if ($user->hasRole('Guru') && $user->guru) {
+            $kelasWali = Kelas::with(['siswa.user', 'mataPelajaran']) // ambil murid dan mapel
+                ->where('wali_kelas_id', $user->guru->id)
+                ->first();
+        }
+
+        return view('dashboard', compact('kelasSaya', 'tugasBelumDikerjakan', 'kelasWali'));
     }
 }

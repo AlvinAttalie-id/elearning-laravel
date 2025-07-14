@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterGuruController;
 use App\Filament\Resources\KelasResource\Pages\SiswaKelas;
 use App\Http\Controllers\{
     DashboardController,
+    GuruController,
     ProfileController,
     KelasController,
     MataPelajaranController,
@@ -81,7 +82,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/pilih-mapel', [MataPelajaranController::class, 'store'])->name('guru.simpan-mapel');
 
             // Daftar Kelas berdasarkan Mapel
+            Route::get('/wali-kelas', [KelasController::class, 'indexWaliKelas'])->name('guru.kelas.wali-kelas');
             Route::get('/mapel/{mataPelajaran:slug}/kelas', [MataPelajaranController::class, 'kelasList'])->name('guru.mapel.kelas');
+            Route::get('/kelas/detail-wali/{kelas:slug}', [KelasController::class, 'detailWali'])->name('guru.kelas.detail-wali');
+            Route::get('/siswa/{siswa}/detail-nilai', [GuruController::class, 'detailNilaiSiswa'])->name('guru.kelas.detail-nilai');
 
             // Tugas Guru
             Route::get('/mapel/{mataPelajaran:slug}/kelas/{kelas:slug}/tugas/create', [TugasController::class, 'create'])->name('guru.tugas.create');

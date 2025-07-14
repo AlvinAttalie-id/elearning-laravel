@@ -24,7 +24,12 @@
                     <x-nav-link :href="route('guru.pilih-mapel')" :active="request()->routeIs('guru.pilih-mapel')">
                         Mata Pelajaran
                     </x-nav-link>
+
+                    <x-nav-link :href="route('guru.kelas.wali-kelas')" :active="request()->routeIs('guru.kelas.wali-kelas')">
+                        Wali Kelas
+                    </x-nav-link>
                 @endrole
+
 
             </div>
 

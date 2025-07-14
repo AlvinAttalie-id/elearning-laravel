@@ -3,35 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kelas;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KelasController extends Controller
 {
     public function index(Request $request)
     {
         $user = Auth::user();
-        $filterJenjang = $request->query('jenjang'); // Tangkap filter dari query string (?jenjang=X)
+        $filterJenjang = $request->query('jenjang');
 
         $query = Kelas::withCount('siswa')
             ->with(['waliKelas.user', 'mataPelajaran']);
 
         if ($filterJenjang) {
-            $query->where('nama', 'like', "{$filterJenjang}-%"); // Contoh: X-1, XI-2, dll
+            $query->where('nama', 'like', "{$filterJenjang}-%");
         }
 
-        $daftarKelas = $query->orderBy('nama')->paginate(5)->withQueryString(); // pagination 5 data
-
+        $daftarKelas = $query->orderBy('nama')->paginate(5)->withQueryString();
         $kelasSaya = $user->siswa->kelas_id ?? null;
 
-        // Hanya ambil kelas yang belum diikuti user
+        // Filter kelas yang belum diikuti user
         $kelasBelumJoin = $daftarKelas->filter(function ($kelas) use ($user) {
             return !$kelas->siswa->contains('user_id', $user->id);
         });
 
-        return view('kelas.index', compact('kelasBelumJoin', 'kelasSaya', 'filterJenjang', 'daftarKelas'));
+        return view('kelas.index', compact('daftarKelas', 'kelasSaya', 'kelasBelumJoin', 'filterJenjang'));
     }
-
 
     public function show(Kelas $kelas)
     {
@@ -42,7 +40,6 @@ class KelasController extends Controller
 
         $siswa = $user->siswa;
         $kelasSayaId = $siswa?->kelas_id;
-
         $kelasPenuh = $kelas->siswa_count >= $kelas->maksimal_siswa;
 
         return view('kelas.show', [
@@ -55,30 +52,28 @@ class KelasController extends Controller
 
     public function join(Kelas $kelas, Request $request)
     {
-        $user = Auth::user();
-        $siswa = $user->siswa;
+        $siswa = Auth::user()->siswa;
 
         if (!$siswa) {
-            return redirect()->back()->with('error', 'Akun Anda belum terdaftar sebagai siswa.');
+            return back()->with('error', 'Akun Anda belum terdaftar sebagai siswa.');
         }
 
         if ($kelas->siswa()->count() >= $kelas->maksimal_siswa) {
-            return redirect()->back()->with('error', 'Kelas ini sudah penuh.');
+            return back()->with('error', 'Kelas ini sudah penuh.');
         }
 
         $siswa->kelas_id = $kelas->id;
         $siswa->save();
 
-        return redirect()->route('kelas.show', $kelas)->with('success', 'Berhasil bergabung ke kelas.');
+        return redirect()->route('kelas.show', $kelas->slug)->with('success', 'Berhasil bergabung ke kelas.');
     }
 
     public function keluar(Kelas $kelas)
     {
-        $user = Auth::user();
-        $siswa = $user->siswa;
+        $siswa = Auth::user()->siswa;
 
         if (!$siswa || $siswa->kelas_id != $kelas->id) {
-            return redirect()->back()->with('error', 'Anda tidak tergabung di kelas ini.');
+            return back()->with('error', 'Anda tidak tergabung di kelas ini.');
         }
 
         $siswa->kelas_id = null;
@@ -98,7 +93,7 @@ class KelasController extends Controller
 
         $kelasSaya = $siswa->kelas()->with([
             'waliKelas.user',
-            'mataPelajaran.tugas'
+            'mataPelajaran.tugas',
         ])->get();
 
         return view('kelas.index-saya', compact('kelasSaya'));
@@ -109,7 +104,6 @@ class KelasController extends Controller
         $user = Auth::user();
         $siswa = $user->siswa;
 
-        // Validasi akses
         if (!$siswa || $siswa->kelas_id != $kelas->id) {
             abort(403, 'Anda tidak memiliki akses ke kelas ini.');
         }
@@ -123,7 +117,6 @@ class KelasController extends Controller
 
         $totalTugasBelum = 0;
 
-        // Format data mapel
         $mapelList = $kelas->mataPelajaran->map(function ($mapel) use ($siswa, &$totalTugasBelum) {
             $jumlahTugasBelum = $mapel->tugas->filter(function ($tugas) use ($siswa) {
                 return $tugas->jawaban->where('siswa_id', $siswa->id)->isEmpty();
@@ -145,6 +138,48 @@ class KelasController extends Controller
             'kelas' => $kelas,
             'mapelList' => $mapelList,
             'totalTugasBelum' => $totalTugasBelum,
+        ]);
+    }
+
+    public function detailWali(Kelas $kelas, Request $request)
+    {
+        $user = Auth::user();
+
+        // Cek apakah user adalah wali kelas dari kelas tersebut
+        if (!$user->guru || $user->guru->id !== $kelas->wali_kelas_id) {
+            abort(403, 'Anda bukan wali kelas dari kelas ini.');
+        }
+
+        $kelas->load(['mataPelajaran.guru.user', 'waliKelas.user']);
+
+        // Ambil siswa dengan user-nya (untuk nama) dan paginate
+        $siswaList = $kelas->siswa()->with('user')->paginate(10);
+
+        return view('guru.kelas.detail-wali', compact('kelas', 'siswaList'));
+    }
+
+    public function indexWaliKelas()
+    {
+        $user = Auth::user();
+        $guru = $user->guru;
+
+        if (!$guru) {
+            abort(403, 'Akun ini bukan guru.');
+        }
+
+        $kelas = Kelas::where('wali_kelas_id', $guru->id)->first();
+
+        if (!$kelas) {
+            // Tampilkan view kosong dengan pesan
+            return view('guru.kelas.wali-kelas', [
+                'kelas' => null,
+                'bukanWali' => true,
+            ]);
+        }
+
+        return view('guru.kelas.wali-kelas', [
+            'kelas' => $kelas,
+            'bukanWali' => false,
         ]);
     }
 }

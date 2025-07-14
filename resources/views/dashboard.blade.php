@@ -140,6 +140,49 @@
 
         @role('Guru')
             <div class="text-lg font-semibold text-gray-700">Selamat datang, Guru!</div>
+
+            @if ($kelasWali)
+                {{-- CARD WALI KELAS --}}
+                <div class="mt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="shield-check" class="w-6 h-6 text-green-600"></i>
+                            <h2 class="text-2xl font-bold text-gray-800">Kelas yang Anda Bina</h2>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-white shadow rounded-xl">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            <div class="p-6 border shadow-sm rounded-2xl hover:shadow-md hover:border-gray-300">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div
+                                        class="flex items-center justify-center w-10 h-10 text-green-600 bg-green-100 rounded-full">
+                                        <i data-lucide="school" class="w-5 h-5"></i>
+                                    </div>
+                                    <h4 class="text-lg font-semibold">{{ $kelasWali->nama }}</h4>
+                                </div>
+
+                                <p class="mb-1 text-sm text-gray-600">
+                                    <span class="font-medium">Jumlah Murid:</span> {{ $kelasWali->siswa->count() }} murid
+                                </p>
+
+                                <p class="mb-4 text-sm text-gray-600">
+                                    <span class="font-medium">Jumlah Mata Pelajaran:</span>
+                                    {{ $kelasWali->mataPelajaran->count() }} mapel
+                                </p>
+
+                                <a href="{{ route('guru.kelas.detail-wali', $kelasWali->slug) }}"
+                                    class="text-sm text-green-600 hover:text-green-800">
+                                    <i data-lucide="eye" class="inline w-4 h-4 mr-1"></i>
+                                    Lihat Detail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endrole
+
+
     </div>
 </x-app-layout>
