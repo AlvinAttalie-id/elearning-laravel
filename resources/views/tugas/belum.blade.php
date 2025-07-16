@@ -44,7 +44,11 @@
 
                     <!-- Tombol -->
                     <div class="mt-6">
-                        <a href="{{ route('tugas.show', [$t->kelas_id, $t->mapel_id, $t->id]) }}"
+                        <a href="{{ route('tugas.show', [
+                            'mataPelajaran' => $t->mataPelajaran->slug,
+                            'kelas' => $t->kelas->slug,
+                            'tugas' => $t->slug,
+                        ]) }}"
                             class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             <i data-lucide="edit-3" class="w-4 h-4 mr-2"></i>
                             Jawab Tugas

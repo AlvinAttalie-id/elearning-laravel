@@ -116,7 +116,7 @@ class KelasResource extends Resource
                 Action::make('lihatSiswa')
                     ->label('Lihat Siswa')
                     ->icon('heroicon-o-users')
-                    ->url(fn($record) => route('filament.admin.resources.kelas.siswa', ['kelas' => $record->id]))
+                    ->url(fn($record) => route('filament.admin.resources.kelas.siswa', ['kelas' => $record->slug]))
                     ->color('info'),
             ])
 

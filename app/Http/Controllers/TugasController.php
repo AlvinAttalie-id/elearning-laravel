@@ -25,7 +25,7 @@ class TugasController extends Controller
             abort(403, 'Anda tidak memiliki akses ke tugas kelas ini.');
         }
 
-        $tugas = Tugas::where('kelas_id', $kelas->id)
+        $tugas = Tugas::with(['mataPelajaran', 'kelas', 'jawaban'])
             ->where('mapel_id', $mataPelajaran->id)
             ->orderByDesc('versi')
             ->orderByDesc('tanggal_deadline')
@@ -103,7 +103,7 @@ class TugasController extends Controller
 
         return redirect()->route('tugas.kelas-mapel', [
             'kelas' => $tugas->kelas->slug,
-            'mataPelajaran' => $tugas->mapel->slug,
+            'mataPelajaran' => $tugas->mataPelajaran->slug,
         ])->with('success', 'Jawaban berhasil dikirim.');
     }
 
@@ -117,7 +117,7 @@ class TugasController extends Controller
 
         $tugasBelum = Tugas::where('kelas_id', $siswa->kelas_id)
             ->whereDoesntHave('jawaban', fn($q) => $q->where('siswa_id', $siswa->id))
-            ->with(['mapel', 'kelas'])
+            ->with(['mataPelajaran', 'kelas']) // ini wajib
             ->orderByDesc('tanggal_deadline')
             ->get();
 

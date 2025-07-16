@@ -31,7 +31,7 @@ class ListTugas extends ListRecords
                         ->searchable(),
                 ])
                 ->action(function (array $data) {
-                    $tasks = Tugas::with(['kelas', 'mapel'])
+                    $tasks = Tugas::with(['kelas', 'mataPelajaran'])
                         ->whereIn('kelas_id', $data['kelas_id'])
                         ->orderBy('kelas_id')
                         ->orderBy('tanggal_deadline')
@@ -59,7 +59,7 @@ class ListTugas extends ListRecords
                     $kelas = Kelas::findOrFail($data['kelas_id']);
 
                     $tasks = Tugas::with([
-                        'mapel',
+                        'mataPelajaran',
                         'jawaban.siswa.user',
                     ])
                         ->where('kelas_id', $kelas->id)

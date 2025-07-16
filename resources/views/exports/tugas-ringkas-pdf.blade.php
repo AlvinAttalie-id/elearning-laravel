@@ -88,7 +88,7 @@
                 <tr>
                     <td style="text-align:center;">{{ $i + 1 }}</td>
                     <td>{{ $tugas->kelas->nama }}</td>
-                    <td>{{ $tugas->mapel->nama_mapel ?? '-' }}</td>
+                    <td>{{ $tugas->mataPelajaran->nama_mapel ?? '-' }}</td>
                     <td>{{ $tugas->judul }}</td>
                     <td>{{ $tugas->tanggal_deadline->format('d M Y') }}</td>
                 </tr>

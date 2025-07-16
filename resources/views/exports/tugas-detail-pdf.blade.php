@@ -83,7 +83,7 @@
 
     @forelse ($tasks as $index => $tugas)
         <h3>{{ $index + 1 }}. {{ $tugas->judul }}</h3>
-        <p><strong>Mata Pelajaran:</strong> {{ $tugas->mapel->nama_mapel ?? '-' }}<br>
+        <p><strong>Mata Pelajaran:</strong> {{ $tugas->mataPelajaran->nama_mapel ?? '-' }}<br>
             <strong>Deadline:</strong> {{ $tugas->tanggal_deadline->format('d M Y') }}
         </p>
         <p><strong>Deskripsi:</strong><br>{{ $tugas->deskripsi ?? '-' }}</p>

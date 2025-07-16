@@ -75,7 +75,7 @@
                                 Sudah Bergabung di Kelas Lain
                             </button>
                         @else
-                            <a href="{{ route('kelas.show', $kelas->id) }}"
+                            <a href="{{ route('kelas.show', $kelas->slug) }}"
                                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 bg-blue-600 rounded-full shadow hover:bg-blue-700 hover:shadow-md active:bg-blue-800">
                                 <i class="fas fa-eye"></i>
                                 Lihat Detail

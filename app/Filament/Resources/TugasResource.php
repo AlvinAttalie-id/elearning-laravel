@@ -106,7 +106,7 @@ class TugasResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('kelas.nama')->label('Kelas')->sortable()->searchable(),
-                TextColumn::make('mapel.nama_mapel')->label('Mata Pelajaran')->sortable()->searchable(),
+                TextColumn::make('mataPelajaran.nama_mapel')->label('Mata Pelajaran')->sortable()->searchable(),
                 TextColumn::make('judul')->label('Judul')->limit(30)->searchable(),
                 TextColumn::make('tanggal_deadline')->label('Deadline')->date(),
             ])

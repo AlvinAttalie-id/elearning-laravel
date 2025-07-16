@@ -1,11 +1,13 @@
 <?php
 
+use App\Filament\Resources\KelasResource\Pages\DetailNilaiSiswa;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use App\Http\Controllers\Auth\RegisterGuruController;
 use App\Filament\Resources\KelasResource\Pages\SiswaKelas;
 use App\Http\Controllers\{
     DashboardController,
+    ExportController,
     GuruController,
     ProfileController,
     KelasController,
@@ -20,9 +22,16 @@ Route::get('/register/pengajar', [RegisterGuruController::class, 'create'])->nam
 Route::post('/register/pengajar', [RegisterGuruController::class, 'store'])->name('register.guru.store');
 
 // Filament
-Route::middleware('auth')
+Route::middleware(['auth', 'verified'])
     ->get('/admin/kelas/{kelas}/siswa', SiswaKelas::class)
     ->name('filament.admin.resources.kelas.siswa');
+
+Route::get('/export/detail-nilai/{siswa}', [ExportController::class, 'detailNilaiSiswa'])
+    ->name('export.detail-nilai');
+
+Route::middleware(['auth', 'verified'])
+    ->get('/admin/siswa/{siswa}/detail', DetailNilaiSiswa::class)
+    ->name('filament.admin.siswa.detail');
 
 // Route setelah login & verifikasi
 Route::middleware(['auth', 'verified'])->group(function () {
