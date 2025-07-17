@@ -69,6 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/belum', [TugasController::class, 'belumDikerjakan'])->name('tugas.belum');
         });
 
+        // Tugas belum dikerjakan khusus kelas tertentu
+        Route::get('kelas/{kelas:slug}/tugas-belum', [TugasController::class, 'belumDikerjakanPerKelas'])->name('tugas.belum-per-kelas');
+
         // Lihat daftar tugas berdasarkan mapel dan kelas
         Route::get(
             'mapel/{mataPelajaran:slug}/kelas/{kelas:slug}/tugas',

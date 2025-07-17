@@ -65,8 +65,7 @@
                             'tugas' => $t->slug,
                         ]) }}"
                             class="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white transition bg-indigo-600 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            <i data-lucide="{{ $jawaban ? 'bg-gray-600 hover:bg-gray-700' : 'bg-indigo-600 hover:bg-indigo-700' }}"
-                                class="w-4 h-4 mr-2"></i>
+                            <i data-lucide="{{ $jawaban ? 'eye' : 'edit-3' }}" class="w-4 h-4 mr-2"></i>
                             {{ $jawaban ? 'Lihat Tugas' : 'Jawab Tugas' }}
                         </a>
                     </div>
@@ -78,6 +77,24 @@
                 </div>
             @endforelse
         </div>
+
+        <!-- Tombol lihat tugas belum dikerjakan jika lebih dari 3 -->
+        @php
+            $siswaId = auth()->user()->siswa->id;
+            $tugasBelumCount = $tugas
+                ->filter(fn($t) => $t->kelas_id === $kelas->id && !$t->jawaban->contains('siswa_id', $siswaId))
+                ->count();
+        @endphp
+
+        @if ($tugasBelumCount > 3)
+            <div class="mt-6 text-right">
+                <a href="{{ route('tugas.belum-per-kelas', $kelas->slug) }}"
+                    class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-full hover:bg-indigo-700">
+                    Lihat Tugas yang Belum Dikerjakan
+                    <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                </a>
+            </div>
+        @endif
     </div>
 
     <!-- Tombol Kembali -->

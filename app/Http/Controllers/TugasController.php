@@ -27,6 +27,7 @@ class TugasController extends Controller
 
         $tugas = Tugas::with(['mataPelajaran', 'kelas', 'jawaban'])
             ->where('mapel_id', $mataPelajaran->id)
+            ->where('kelas_id', $kelas->id)
             ->orderByDesc('versi')
             ->orderByDesc('tanggal_deadline')
             ->with('jawaban')
@@ -81,16 +82,25 @@ class TugasController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
-        if (JawabanTugas::where('tugas_id', $tugas->id)->where('siswa_id', $siswa->id)->exists()) {
-            return redirect()->back()->with('error', 'Kamu sudah menjawab tugas ini.');
+        $jawaban = JawabanTugas::where('tugas_id', $tugas->id)
+            ->where('siswa_id', $siswa->id)
+            ->first();
+
+        // Jika belum ada, buat jawaban pertama
+        if (!$jawaban) {
+            $jawaban = new JawabanTugas([
+                'tugas_id' => $tugas->id,
+                'siswa_id' => $siswa->id,
+                'submit_count' => 1,
+            ]);
+        } elseif ($jawaban->submit_count >= 2) {
+            return redirect()->back()->with('error', 'Kamu sudah mencapai batas maksimal pengiriman jawaban (2 kali).');
+        } else {
+            $jawaban->submit_count += 1;
         }
 
-        $jawaban = new JawabanTugas([
-            'tugas_id' => $tugas->id,
-            'siswa_id' => $siswa->id,
-            'jawaban' => $request->jawaban,
-            'submitted_at' => now(),
-        ]);
+        $jawaban->jawaban = $request->jawaban;
+        $jawaban->submitted_at = now();
 
         if ($request->hasFile('file_path')) {
             $filename = $request->file('file_path')->store('jawaban_tugas', 'public');
@@ -99,15 +109,14 @@ class TugasController extends Controller
 
         $jawaban->save();
 
-        // Tambahkan ini untuk cek isi jawaban:
-
         return redirect()->route('tugas.kelas-mapel', [
             'kelas' => $tugas->kelas->slug,
             'mataPelajaran' => $tugas->mataPelajaran->slug,
         ])->with('success', 'Jawaban berhasil dikirim.');
     }
 
-    public function belumDikerjakan()
+
+    public function belumDikerjakanPerKelas(Kelas $kelas)
     {
         $siswa = Auth::user()->siswa;
 
@@ -115,15 +124,20 @@ class TugasController extends Controller
             abort(403, 'Akses hanya untuk murid.');
         }
 
-        $tugasBelum = Tugas::where('kelas_id', $siswa->kelas_id)
+        // Cek apakah siswa tergabung dalam kelas tersebut
+        if ($siswa->kelas_id !== $kelas->id) {
+            abort(403, 'Anda tidak tergabung dalam kelas ini.');
+        }
+
+        $tugasBelum = Tugas::where('kelas_id', $kelas->id)
             ->whereDoesntHave('jawaban', fn($q) => $q->where('siswa_id', $siswa->id))
-            ->with(['mataPelajaran', 'kelas']) // ini wajib
+            ->with(['mataPelajaran', 'kelas'])
             ->orderByDesc('tanggal_deadline')
             ->get();
 
         return view('tugas.belum', [
             'tugasBelum' => $tugasBelum,
-            'kelas' => $siswa->kelas,
+            'kelas' => $kelas,
         ]);
     }
 

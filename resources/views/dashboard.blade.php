@@ -119,7 +119,7 @@
 
                     @if ($tugasBelumDikerjakan->count() > 3)
                         <div class="mt-6 text-right">
-                            <a href="{{ route('tugas.belum') }}"
+                            <a href="{{ route('tugas.belum-per-kelas', $kelas->slug) }}"
                                 class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-full hover:bg-indigo-700">
                                 Lihat Semua Tugas
                                 <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
