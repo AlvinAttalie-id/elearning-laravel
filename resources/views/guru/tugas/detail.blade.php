@@ -23,33 +23,13 @@
                 <p class="text-sm text-gray-600"><strong>Deadline:</strong>
                     {{ $tugas->tanggal_deadline->translatedFormat('d F Y H:i') }}</p>
 
-                {{-- Video Tugas --}}
-                @php
-                    function getYoutubeEmbedUrl($url)
-                    {
-                        // Handle youtu.be short links
-                        if (Str::contains($url, 'youtu.be')) {
-                            return 'https://www.youtube.com/embed/' . Str::after($url, 'youtu.be/');
-                        }
-
-                        // Handle full youtube.com links
-                        if (Str::contains($url, 'youtube.com/watch')) {
-                            parse_str(parse_url($url, PHP_URL_QUERY), $query);
-                            return 'https://www.youtube.com/embed/' . ($query['v'] ?? '');
-                        }
-
-                        // Default fallback
-                        return $url;
-                    }
-                @endphp
-
-                @if ($tugas->link_video)
-                    <div class="mt-6">
-                        <h4 class="mb-2 text-sm font-semibold text-gray-700">Video Terkait:</h4>
-                        <div class="aspect-w-16 aspect-h-9">
-                            <iframe class="w-full h-64 rounded-lg" src="{{ getYoutubeEmbedUrl($tugas->link_video) }}"
-                                frameborder="0" allowfullscreen>
-                            </iframe>
+                {{-- Video --}}
+                @if ($videoEmbedUrl)
+                    <div class="mt-4">
+                        <h4 class="text-sm font-semibold text-gray-700">Video Penjelasan:</h4>
+                        <div class="mt-2 aspect-w-16 aspect-h-9">
+                            <iframe class="w-full h-64 rounded-lg" src="{{ $videoEmbedUrl }}" frameborder="0"
+                                allowfullscreen></iframe>
                         </div>
                     </div>
                 @endif

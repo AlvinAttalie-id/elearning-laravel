@@ -11,10 +11,10 @@ use App\Models\Siswa;
 use App\Models\TugasFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class TugasController extends Controller
 {
-    // ====================== MURID SECTION ======================
 
     public function indexByKelasMapel(MataPelajaran $mataPelajaran, Kelas $kelas)
     {
@@ -55,11 +55,14 @@ class TugasController extends Controller
 
         $nilai = $jawaban?->nilai;
 
+        $embedUrl = $this->getYoutubeEmbedUrl($tugas->link_video);
+
         return view('tugas.show', [
             'tugas' => $tugas,
             'siswa' => $siswa,
             'jawaban' => $jawaban,
             'nilai' => $nilai,
+            'videoEmbedUrl' => $embedUrl,
         ]);
     }
 
@@ -86,17 +89,11 @@ class TugasController extends Controller
             ->where('siswa_id', $siswa->id)
             ->first();
 
-        // Jika belum ada, buat jawaban pertama
         if (!$jawaban) {
             $jawaban = new JawabanTugas([
                 'tugas_id' => $tugas->id,
                 'siswa_id' => $siswa->id,
-                'submit_count' => 1,
             ]);
-        } elseif ($jawaban->submit_count >= 2) {
-            return redirect()->back()->with('error', 'Kamu sudah mencapai batas maksimal pengiriman jawaban (2 kali).');
-        } else {
-            $jawaban->submit_count += 1;
         }
 
         $jawaban->jawaban = $request->jawaban;
@@ -209,11 +206,12 @@ class TugasController extends Controller
             ->where('kelas_id', $kelas->id)
             ->paginate(10);
 
-        return view('guru.tugas.detail', [
-            'tugas' => $tugas,
-            'siswaList' => $siswaList,
-        ]);
+        // Ini bagian yang kurang kemarin 👇
+        $videoEmbedUrl = $this->getYoutubeEmbedUrl($tugas->link_video);
+
+        return view('guru.tugas.detail', compact('tugas', 'siswaList', 'videoEmbedUrl'));
     }
+
 
     public function beriNilai(Request $request, $jawaban)
     {
@@ -228,7 +226,6 @@ class TugasController extends Controller
         $nilai->fill([
             'siswa_id' => $jawaban->siswa_id,
             'mapel_id' => $jawaban->tugas->mapel_id,
-            'tugas_id' => $jawaban->tugas_id,
             'jawaban_tugas_id' => $jawaban->id,
             'nilai' => $request->nilai,
             'feedback' => $request->feedback,
@@ -236,5 +233,22 @@ class TugasController extends Controller
         $nilai->save();
 
         return back()->with('success', 'Nilai dan feedback berhasil disimpan.');
+    }
+
+    //Video Embed Helper
+    private function getYoutubeEmbedUrl($url)
+    {
+        if (!$url) return null;
+
+        if (Str::contains($url, 'youtu.be')) {
+            return 'https://www.youtube.com/embed/' . Str::after($url, 'youtu.be/');
+        }
+
+        if (Str::contains($url, 'youtube.com/watch')) {
+            parse_str(parse_url($url, PHP_URL_QUERY), $query);
+            return 'https://www.youtube.com/embed/' . ($query['v'] ?? '');
+        }
+
+        return $url;
     }
 }

@@ -24,25 +24,12 @@
                 <p class="mt-1 text-sm text-gray-700">{{ $tugas->deskripsi }}</p>
 
                 {{-- Video --}}
-                @if ($tugas->link_video)
-                    @php
-                        function getYoutubeEmbedUrl($url)
-                        {
-                            if (Str::contains($url, 'youtu.be')) {
-                                return 'https://www.youtube.com/embed/' . Str::after($url, 'youtu.be/');
-                            }
-                            if (Str::contains($url, 'youtube.com/watch')) {
-                                parse_str(parse_url($url, PHP_URL_QUERY), $query);
-                                return 'https://www.youtube.com/embed/' . ($query['v'] ?? '');
-                            }
-                            return $url;
-                        }
-                    @endphp
+                @if ($videoEmbedUrl)
                     <div class="mt-4">
                         <h4 class="text-sm font-semibold text-gray-700">Video Penjelasan:</h4>
                         <div class="mt-2 aspect-w-16 aspect-h-9">
-                            <iframe class="w-full h-64 rounded-lg" src="{{ getYoutubeEmbedUrl($tugas->link_video) }}"
-                                frameborder="0" allowfullscreen></iframe>
+                            <iframe class="w-full h-64 rounded-lg" src="{{ $videoEmbedUrl }}" frameborder="0"
+                                allowfullscreen></iframe>
                         </div>
                     </div>
                 @endif
@@ -108,41 +95,38 @@
                     </div>
                 </div>
 
-                @if ($jawaban->submit_count < 2)
-                    <div class="p-4 mt-6 text-sm text-yellow-800 border border-yellow-200 rounded-md bg-yellow-50">
-                        <strong>Catatan:</strong> Kamu masih bisa mengirim ulang jawaban satu kali lagi.
+                {{-- Form Kirim Ulang --}}
+                <div class="p-4 mt-6 text-sm text-yellow-800 border border-yellow-200 rounded-md bg-yellow-50">
+                    <strong>Catatan:</strong> Jawaban ini dapat diperbarui kapan saja sebelum deadline.
+                </div>
+
+                <form method="POST" action="{{ route('tugas.jawab', $tugas->slug) }}" enctype="multipart/form-data"
+                    class="mt-6 space-y-6">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Jawaban Teks</label>
+                        <textarea name="jawaban" rows="4"
+                            class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('jawaban') }}</textarea>
                     </div>
 
-                    {{-- Form Kirim Ulang --}}
-                    <form method="POST" action="{{ route('tugas.jawab', $tugas->slug) }}"
-                        enctype="multipart/form-data" class="mt-6 space-y-6">
-                        @csrf
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Jawaban Teks</label>
-                            <textarea name="jawaban" rows="4"
-                                class="w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('jawaban') }}</textarea>
+                    <div x-data="{ fileName: '' }">
+                        <label for="file_path" class="block text-sm font-medium text-gray-700">Unggah File</label>
+                        <div class="relative mt-1">
+                            <input type="file" name="file_path" id="file_path" accept=".pdf,.doc,.docx"
+                                @change="fileName = $event.target.files[0]?.name || ''"
+                                class="block w-full text-sm text-gray-900 border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 focus:ring-indigo-500 focus:border-indigo-500">
+                            <template x-if="fileName">
+                                <p class="mt-2 text-xs text-gray-500">Terpilih: <strong x-text="fileName"></strong></p>
+                            </template>
                         </div>
+                        <p class="mt-1 text-xs text-gray-500">Format: PDF, DOC, DOCX (maks 2MB)</p>
+                    </div>
 
-                        <div x-data="{ fileName: '' }">
-                            <label for="file_path" class="block text-sm font-medium text-gray-700">Unggah File</label>
-                            <div class="relative mt-1">
-                                <input type="file" name="file_path" id="file_path" accept=".pdf,.doc,.docx"
-                                    @change="fileName = $event.target.files[0]?.name || ''"
-                                    class="block w-full text-sm text-gray-900 border-gray-300 rounded-md shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 focus:ring-indigo-500 focus:border-indigo-500">
-                                <template x-if="fileName">
-                                    <p class="mt-2 text-xs text-gray-500">Terpilih: <strong x-text="fileName"></strong>
-                                    </p>
-                                </template>
-                            </div>
-                            <p class="mt-1 text-xs text-gray-500">Format: PDF, DOC, DOCX (maks 2MB)</p>
-                        </div>
-
-                        <button type="submit"
-                            class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            Kirim Ulang Jawaban
-                        </button>
-                    </form>
-                @endif
+                    <button type="submit"
+                        class="inline-flex items-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Perbarui Jawaban
+                    </button>
+                </form>
             @else
                 {{-- First Time Form --}}
                 <form method="POST" action="{{ route('tugas.jawab', $tugas->slug) }}" enctype="multipart/form-data"

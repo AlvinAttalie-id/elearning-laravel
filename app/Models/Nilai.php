@@ -15,7 +15,7 @@ class Nilai extends Model
     protected $fillable = [
         'siswa_id',
         'mapel_id',
-        'tugas_id',           // atau 'jawaban_tugas_id'
+        'jawaban_tugas_id',
         'nilai',
         'feedback',
     ];
