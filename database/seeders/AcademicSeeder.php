@@ -118,6 +118,7 @@ class AcademicSeeder extends Seeder
                     ]);
 
                     foreach ($kelas->siswa as $siswa) {
+
                         $jawaban = JawabanTugas::create([
                             'tugas_id' => $tugas->id,
                             'siswa_id' => $siswa->id,
@@ -126,12 +127,26 @@ class AcademicSeeder extends Seeder
                             'submitted_at' => Carbon::now()->subDays(rand(0, 3)),
                         ]);
 
+                        $feedbacks = [
+                            'Good job!',
+                            'Well done!',
+                            'Coba lebih teliti lagi ya.',
+                            'Jawaban kamu sudah bagus, tapi bisa dikembangkan.',
+                            'Kerja bagus, pertahankan!',
+                            'Jangan lupa baca materinya lagi.',
+                            'Mantap, terus tingkatkan!',
+                            'Sudah tepat, tapi perhatikan bagian akhir.',
+                            'Perlu sedikit perbaikan.',
+                            'Tugas dikerjakan dengan baik.',
+                        ];
+
                         Nilai::create([
+
                             'siswa_id' => $siswa->id,
                             'mapel_id' => $mapel->id,
                             'jawaban_tugas_id' => $jawaban->id,
                             'nilai' => rand(60, 100),
-                            'feedback' => $faker->sentence(),
+                            'feedback' => $faker->randomElement($feedbacks),
                         ]);
                     }
                 }
