@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kelas;
+use App\Models\MataPelajaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -170,7 +171,7 @@ class KelasController extends Controller
         $kelas = Kelas::where('wali_kelas_id', $guru->id)->first();
 
         if (!$kelas) {
-            // Tampilkan view kosong dengan pesan
+
             return view('guru.kelas.wali-kelas', [
                 'kelas' => null,
                 'bukanWali' => true,

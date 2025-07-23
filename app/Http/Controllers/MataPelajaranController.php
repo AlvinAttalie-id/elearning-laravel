@@ -37,7 +37,6 @@ class MataPelajaranController extends Controller
         return redirect()->route('dashboard')->with('success', 'Mata pelajaran berhasil disimpan.');
     }
 
-    // Contoh di MataPelajaranController
     public function kelasList(MataPelajaran $mataPelajaran)
     {
         $guru = Auth::user()->guru;
