@@ -14,7 +14,7 @@ class UserRoleSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
+        $faker = Faker::create('id_ID');
 
         // Buat role jika belum ada
         $adminRole = Role::firstOrCreate(['name' => 'Admin']);
