@@ -31,7 +31,7 @@ class UserRoleSeeder extends Seeder
         // GURU
         for ($i = 1; $i <= 10; $i++) {
             $user = User::create([
-                'name' => $faker->name,
+                'name' => $faker->name, // bisa mengandung gelar
                 'email' => "guru{$i}@example.com",
                 'password' => Hash::make('password'),
             ]);
@@ -44,10 +44,10 @@ class UserRoleSeeder extends Seeder
             ]);
         }
 
-        // MURID (525 total)
+        // MURID
         for ($i = 1; $i <= 525; $i++) {
             $user = User::create([
-                'name' => $faker->name,
+                'name' => $faker->firstName . ' ' . $faker->lastName, // tanpa gelar
                 'email' => "murid{$i}@example.com",
                 'password' => Hash::make('password'),
             ]);

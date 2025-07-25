@@ -2,9 +2,10 @@
     <div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-100 sm:px-6 lg:px-8">
         <div class="w-full max-w-md p-6 space-y-6 bg-white border border-gray-200 shadow-md rounded-2xl">
             <div class="text-center">
-                <a href="{{ url('/') }}" class="text-2xl font-bold text-gray-800">
-                    {{ config('app.name', 'Laravel') }}
+                <a href="{{ url('/') }}" class="inline-block">
+                    <img src="{{ asset('images/logo-header.png') }}" alt="Logo" class="h-12 mx-auto mb-1">
                 </a>
+                <div class="text-xl font-bold text-gray-800">{{ config('app.name', 'Laravel') }}</div>
                 <h2 class="mt-1 text-lg font-semibold text-gray-700">Masuk ke akun Anda</h2>
             </div>
 
